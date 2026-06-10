@@ -453,11 +453,11 @@ JEDDAH 23214      ${travelers[0].padStart(58, ' ')}
         const maxAirline = 22; 
         const maxAirport = 44; 
 
-                // Flight 1
+                        // Flight 1
         ticket += `FLIGHT     ${out1Flight.value} - ${fixWidth(carrier, 25)}              ${formatFullDate(out1Date.value)}
 ${fullSep}
-DEPARTURE: ${fixWidth(out1From.value, 45)}${shortDate(out1Date.value).padStart(8)} ${out1DepTime.value}
-ARRIVAL:   ${fixWidth(out1To.value, 45)}${shortDate(out1Date.value).padStart(8)} ${out1ArrTime.value}
+DEPARTURE: ${fixWidth(out1From.value, 60)}${shortDate(out1Date.value).padStart(8)} ${out1DepTime.value}
+ARRIVAL:   ${fixWidth(out1To.value, 60)}${shortDate(out1Date.value).padStart(8)} ${out1ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (B)                 DURATION: 03:55
 ${dashSep}
@@ -472,8 +472,8 @@ ${fullSep}\n`;
 if (flightType === 'transit') {
     ticket += `FLIGHT     ${out2Flight.value} - ${fixWidth(carrier, 25)}              ${formatFullDate(out2Date.value)}
 ${fullSep}
-DEPARTURE: ${fixWidth(out2From.value, 45)}${shortDate(out2Date.value).padStart(8)} ${out2DepTime.value}
-ARRIVAL:   ${fixWidth(out2To.value, 45)}${shortDate(out2Date.value).padStart(8)} ${out2ArrTime.value}
+DEPARTURE: ${fixWidth(out2From.value, 60)}${shortDate(out2Date.value).padStart(8)} ${out2DepTime.value}
+ARRIVAL:   ${fixWidth(out2To.value, 60)}${shortDate(out2Date.value).padStart(8)} ${out2ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (B)                 DURATION: 03:15
 ${dashSep}
@@ -489,8 +489,8 @@ ${fullSep}\n`;
 if (flightType === 'transit') {
     ticket += `FLIGHT     ${ret1Flight.value} - ${fixWidth(carrier, 25)}              ${formatFullDate(ret1Date.value)}
 ${fullSep}
-DEPARTURE: ${fixWidth(ret1From.value, 45)}${shortDate(ret1Date.value).padStart(8)} ${ret1DepTime.value}
-ARRIVAL:   ${fixWidth(ret1To.value, 45)}${shortDate(ret1Date.value).padStart(8)} ${ret1ArrTime.value}
+DEPARTURE: ${fixWidth(ret1From.value, 60)}${shortDate(ret1Date.value).padStart(8)} ${ret1DepTime.value}
+ARRIVAL:   ${fixWidth(ret1To.value, 60)}${shortDate(ret1Date.value).padStart(8)} ${ret1ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (L)                 DURATION: 03:15
 ${dashSep}
@@ -505,8 +505,8 @@ ${fullSep}\n`;
         // Flight 4
         ticket += `FLIGHT     ${ret2Flight.value} - ${fixWidth(carrier, 25)}              ${formatFullDate(ret2Date.value)}
 ${fullSep}
-DEPARTURE: ${fixWidth(ret2From.value, 45)}${shortDate(ret2Date.value).padStart(8)} ${ret2DepTime.value}
-ARRIVAL:   ${fixWidth(ret2To.value, 45)}${nextDayShort(ret2Date.value).padStart(8)} ${ret2ArrTime.value}
+DEPARTURE: ${fixWidth(ret2From.value, 60)}${shortDate(ret2Date.value).padStart(8)} ${ret2DepTime.value}
+ARRIVAL:   ${fixWidth(ret2To.value, 60)}${nextDayShort(ret2Date.value).padStart(8)} ${ret2ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (L)                 DURATION: 03:55
 ${dashSep}
