@@ -570,7 +570,7 @@ your personal data is collected, stored, used, disclosed and transferred.
         c// 🎯 CHANGED: Moved from 190 to 185. This increases the right white space to 2.5 cm.
         // (If you want 3 cm, change this number to 180)
         const rightAlignX = 180; 
-
+		
         lines.forEach(line => {
             // 🎯 NEW: Trigger page checks right before specific sections
             if (line.trim() === 'FLIGHT TICKET(S)') {
@@ -588,19 +588,8 @@ your personal data is collected, stored, used, disclosed and transferred.
 
             // Reset colors to black for every new line by default
             doc.setTextColor(0, 0, 0);
-            doc.setDrawColor(0, 0, 0);
 
-            // 🎯 1. HANDLE SEPARATORS (Draw DASHED lines back to match original style)
-            if (line.trim().startsWith('---') || line.trim().startsWith('- -')) {
-                doc.setLineWidth(0.2);
-                doc.setLineDashPattern([3, 2], 0); // [dash length, gap length]
-                doc.line(marginLeft, y, rightAlignX, y); // Draws dashed line from left to new right margin
-                doc.setLineDashPattern([], 0); // Reset to solid for the rest of the PDF
-                y += lineHeight;
-                return; // Skip to the next line
-            }
-
-            // 🎯 2. HANDLE THE "SPLIT" (Left and Right alignment)
+            // 🎯 1. HANDLE THE "SPLIT" (Left and Right alignment)
             if (line.includes('|||')) {
                 const parts = line.split('|||');
                 const leftText = parts[0];
@@ -609,14 +598,14 @@ your personal data is collected, stored, used, disclosed and transferred.
                 // Draw left side at the left margin
                 doc.text(leftText, marginLeft, y);
                 
-                // Draw right side glued to the new right margin
+                // Draw right side glued to the right margin
                 doc.text(rightText, rightAlignX, y, { align: 'right' });
                 
                 y += lineHeight;
                 return; // Skip to the next line
             }
 
-            // 🎯 3. STANDARD TEXT RENDERING (For everything else)
+            // 🎯 2. STANDARD TEXT RENDERING (For everything else including dashes)
             if (line.trim() === 'https://www.icao.int/environmental-protection/CarbonOffset/Pages/default.aspx') {
                 doc.setTextColor(0, 0, 255); 
                 doc.text(line, marginLeft, y);
