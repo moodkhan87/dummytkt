@@ -412,8 +412,17 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
     function cityOnly(fullName) {
         return fullName.split(',')[0].trim().toUpperCase();
     }
+	    // 🎯 NEW: Forces text to a strict width. Truncates with "..." if too long, pads with spaces if too short.
+    // This guarantees the right-side columns (Dates/Times) never shift.
+    function fixWidth(text, maxLen) {
+        if (!text) return " ".repeat(maxLen);
+        if (text.length > maxLen) {
+            return text.substring(0, maxLen - 3) + "...";
+        }
+        return text.padEnd(maxLen);
+    }
 
-    // MAIN TICKET BUILDER - MATCHING ORIGINAL DESIGN
+	// MAIN TICKET BUILDER - MATCHING ORIGINAL DESIGN
     function buildExactTicket() {
         const carrier = (airlineCarrier.value || "TURKISH AIRLINES").trim().toUpperCase();
         const bookingRef = randomBookingRef();
@@ -440,11 +449,15 @@ JEDDAH 23214      ${travelers[0].padStart(58, ' ')}
 
         ticket += `SAUDI ARABIA\n\n`;
 
+                // Define strict max widths for columns
+        const maxAirline = 22; 
+        const maxAirport = 44; 
+
         // Flight 1
-        ticket += `FLIGHT     ${out1Flight.value} - ${carrier}                         ${formatFullDate(out1Date.value)}
+        ticket += `FLIGHT     ${out1Flight.value} - ${fixWidth(carrier, maxAirline)}                         ${formatFullDate(out1Date.value)}
 ${fullSep}
-DEPARTURE: ${out1From.value}          ${shortDate(out1Date.value)} ${out1DepTime.value}
-ARRIVAL:   ${out1To.value}                       ${shortDate(out1Date.value)} ${out1ArrTime.value}
+DEPARTURE: ${fixWidth(out1From.value, maxAirport)}          ${shortDate(out1Date.value)} ${out1DepTime.value}
+ARRIVAL:   ${fixWidth(out1To.value, maxAirport)}                       ${shortDate(out1Date.value)} ${out1ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (B)                 DURATION: 03:55
 ${dashSep}
@@ -455,13 +468,12 @@ NON STOP   ${cityOnly(out1From.value)} TO ${cityOnly(out1To.value)}
 
 ${fullSep}\n`;
 
-        // Flight 2
-        // Flight 2 (only in Transit mode)
-if (flightType === 'transit') {
-    ticket += `FLIGHT     ${out2Flight.value} - ${carrier}                        ${formatFullDate(out2Date.value)}
+        // Flight 2 (Transit only)
+        if (flightType === 'transit') {
+            ticket += `FLIGHT     ${out2Flight.value} - ${fixWidth(carrier, maxAirline)}                        ${formatFullDate(out2Date.value)}
 ${fullSep}
-DEPARTURE: ${out2From.value}                       ${shortDate(out2Date.value)} ${out2DepTime.value}
-ARRIVAL:   ${out2To.value}         ${shortDate(out2Date.value)} ${out2ArrTime.value}
+DEPARTURE: ${fixWidth(out2From.value, maxAirport)}                       ${shortDate(out2Date.value)} ${out2DepTime.value}
+ARRIVAL:   ${fixWidth(out2To.value, maxAirport)}         ${shortDate(out2Date.value)} ${out2ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (B)                 DURATION: 03:15
 ${dashSep}
@@ -471,14 +483,14 @@ NON STOP   ${cityOnly(out2From.value)} TO ${cityOnly(out2To.value)}
            EQUIPMENT:                ${randomEquip()}
 
 ${fullSep}\n`;
-}
+        }
 
-        // Flight 3 (only in Transit mode)
-if (flightType === 'transit') {
-    ticket += `FLIGHT     ${ret1Flight.value} - ${carrier}                        ${formatFullDate(ret1Date.value)}
+        // Flight 3 (Transit only)
+        if (flightType === 'transit') {
+            ticket += `FLIGHT     ${ret1Flight.value} - ${fixWidth(carrier, maxAirline)}                        ${formatFullDate(ret1Date.value)}
 ${fullSep}
-DEPARTURE: ${ret1From.value}         ${shortDate(ret1Date.value)} ${ret1DepTime.value}
-ARRIVAL:   ${ret1To.value}                       ${shortDate(ret1Date.value)} ${ret1ArrTime.value}
+DEPARTURE: ${fixWidth(ret1From.value, maxAirport)}         ${shortDate(ret1Date.value)} ${ret1DepTime.value}
+ARRIVAL:   ${fixWidth(ret1To.value, maxAirport)}                       ${shortDate(ret1Date.value)} ${ret1ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (L)                 DURATION: 03:15
 ${dashSep}
@@ -488,13 +500,13 @@ NON STOP   ${cityOnly(ret1From.value)} TO ${cityOnly(ret1To.value)}
            EQUIPMENT:                ${randomEquip()}
 
 ${fullSep}\n`;
-}
+        }
 
         // Flight 4
-        ticket += `FLIGHT     ${ret2Flight.value} - ${carrier}                         ${formatFullDate(ret2Date.value)}
+        ticket += `FLIGHT     ${ret2Flight.value} - ${fixWidth(carrier, maxAirline)}                         ${formatFullDate(ret2Date.value)}
 ${fullSep}
-DEPARTURE: ${ret2From.value}                       ${shortDate(ret2Date.value)} ${ret2DepTime.value}
-ARRIVAL:   ${ret2To.value}          ${nextDayShort(ret2Date.value)} ${ret2ArrTime.value}
+DEPARTURE: ${fixWidth(ret2From.value, maxAirport)}                       ${shortDate(ret2Date.value)} ${ret2DepTime.value}
+ARRIVAL:   ${fixWidth(ret2To.value, maxAirport)}          ${nextDayShort(ret2Date.value)} ${ret2ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (L)                 DURATION: 03:55
 ${dashSep}
@@ -504,7 +516,7 @@ NON STOP   ${cityOnly(ret2From.value)} TO ${cityOnly(ret2To.value)}
            EQUIPMENT:                ${randomEquip()}
 
 ${fullSep}\n`;
-
+		
         ticket += `FLIGHT(S) CALCULATED AVERAGE CO2 EMISSIONS IS 664.31 KG/PERSON
 SOURCE: ICAO CARBON EMISSIONS CALCULATOR
 https://www.icao.int/environmental-protection/CarbonOffset/Pages/default.aspx
