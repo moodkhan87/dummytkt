@@ -434,17 +434,18 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
         	// 🎯 NEW: Right-align the traveler name to column 70
         	const travelerPadded = traveler.padStart(58, ' ');
 
-        const fullSep = "-----------------------------------------------------------------------------";
-        const dashSep = "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
+        const fullSep = "-----------------------------------------------------------------------------------------";
+        const dashSep = "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 
-        let ticket = `AL MUSAFIR AL AWWAL TOURISM                                     BOOKING REF: ${bookingRef}
-MADINAH ROAD                                                      DATE: ${currentDate}
+        let ticket = `AL MUSAFIR AL AWWAL TOURISM|||BOOKING REF: ${bookingRef}
+MADINAH ROAD|||DATE: ${currentDate}
 AR RUWAIS DIST
-JEDDAH 23214             ${travelers[0].padStart(58, ' ')}
+JEDDAH 23214|||${travelers[0]}
 `;
-	//  NEW: Stack remaining passengers below the first one, aligned to the right margin
+
+        // Stack remaining passengers (No more padStart needed!)
         for (let i = 1; i < travelers.length; i++) {
-            ticket += `${travelers[i].padStart(76, ' ')}\n`;
+            ticket += `|||${travelers[i]}\n`; 
         }
 
         ticket += `SAUDI ARABIA\n\n`;
