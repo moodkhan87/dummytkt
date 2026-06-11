@@ -422,6 +422,25 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
         }
         return text.padEnd(maxLen);
     }
+	// 🎯 NEW: Smart date logic - checks if flight crosses midnight (PM departure → AM arrival)
+	function smartArrivalDate(departureDate, departureTime, arrivalTime) {
+	    if (!departureDate || !departureTime || !arrivalTime) return departureDate;
+	    
+	    // Extract hours from time strings (e.g., "22:55" → 22, "01:15" → 1)
+	    const depHour = parseInt(departureTime.split(':')[0]);
+	    const arrHour = parseInt(arrivalTime.split(':')[0]);
+	    
+	    // If departure is PM (>=12) and arrival is AM (<12), flight crossed midnight
+	    if (depHour >= 12 && arrHour < 12) {
+	        // Add 1 day to departure date
+	        const date = new Date(departureDate);
+	        date.setDate(date.getDate() + 1);
+	        return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
+	    }
+	    
+	    // Otherwise, same day arrival
+	    return departureDate;
+	}
 
 	// MAIN TICKET BUILDER - MATCHING ORIGINAL DESIGN
     function buildExactTicket() {
@@ -455,69 +474,69 @@ JEDDAH 23214|||${travelers[0]}
         const maxAirline = 22; 
         const maxAirport = 44; 
 
-                        // Flight 1
-        ticket += `FLIGHT     ${out1Flight.value} - ${carrier}|||${formatFullDate(out1Date.value)}
-${fullSep}
-DEPARTURE: ${out1From.value}|||${shortDate(out1Date.value)} ${out1DepTime.value}
-ARRIVAL:   ${out1To.value}|||${shortDate(out1Date.value)} ${out1ArrTime.value}
-           FLIGHT BOOKING REF: TK/${bookingRef}
-           RESERVATION CONFIRMED, ECONOMY (B)|||DURATION: 03:55
-${dashSep}
-           MEAL:                     MEAL
-
-NON STOP   ${cityOnly(out1From.value)} TO ${cityOnly(out1To.value)}
-           EQUIPMENT:                ${randomEquip()}
-
-${fullSep}\n`;
-
-        // Flight 2 (only in Transit mode)
-if (flightType === 'transit') {
-    ticket += `FLIGHT     ${out2Flight.value} - ${carrier}|||${formatFullDate(out2Date.value)}
-${fullSep}
-DEPARTURE: ${out2From.value}|||${shortDate(out2Date.value)} ${out2DepTime.value}
-ARRIVAL:   ${out2To.value}|||${shortDate(out2Date.value)} ${out2ArrTime.value}
-           FLIGHT BOOKING REF: TK/${bookingRef}
-           RESERVATION CONFIRMED, ECONOMY (B)|||DURATION: 03:15
-${dashSep}
-           MEAL:                     MEAL
-
-NON STOP   ${cityOnly(out2From.value)} TO ${cityOnly(out2To.value)}
-           EQUIPMENT:                ${randomEquip()}
-
-${fullSep}\n`;
-}
-
-        // Flight 3 (only in Transit mode)
-if (flightType === 'transit') {
-    ticket += `FLIGHT     ${ret1Flight.value} - ${carrier}|||${formatFullDate(ret1Date.value)}
-${fullSep}
-DEPARTURE: ${ret1From.value}|||${shortDate(ret1Date.value)} ${ret1DepTime.value}
-ARRIVAL:   ${ret1To.value}|||${shortDate(ret1Date.value)} ${ret1ArrTime.value}
-           FLIGHT BOOKING REF: TK/${bookingRef}
-           RESERVATION CONFIRMED, ECONOMY (L)|||DURATION: 03:15
-${dashSep}
-           MEAL:                     MEAL
-
-NON STOP   ${cityOnly(ret1From.value)} TO ${cityOnly(ret1To.value)}
-           EQUIPMENT:                ${randomEquip()}
-
-${fullSep}\n`;
-}
-
-        // Flight 4
-        ticket += `FLIGHT     ${ret2Flight.value} - ${carrier}|||${formatFullDate(ret2Date.value)}
-${fullSep}
-DEPARTURE: ${ret2From.value}|||${shortDate(ret2Date.value)} ${ret2DepTime.value}
-ARRIVAL:   ${ret2To.value}|||${nextDayShort(ret2Date.value)} ${ret2ArrTime.value}
-           FLIGHT BOOKING REF: TK/${bookingRef}
-           RESERVATION CONFIRMED, ECONOMY (L)|||DURATION: 03:55
-${dashSep}
-           MEAL:                     MEAL
-
-NON STOP   ${cityOnly(ret2From.value)} TO ${cityOnly(ret2To.value)}
-           EQUIPMENT:                ${randomEquip()}
-
-${fullSep}\n`;
+		            // Flight 1
+		        ticket += `FLIGHT     ${out1Flight.value} - ${carrier}|||${formatFullDate(out1Date.value)}
+		${fullSep}
+		DEPARTURE: ${out1From.value}|||${shortDate(out1Date.value)} ${out1DepTime.value}
+		ARRIVAL:   ${out1To.value}|||${shortDate(smartArrivalDate(out1Date.value, out1DepTime.value, out1ArrTime.value))} ${out1ArrTime.value}
+		           FLIGHT BOOKING REF: TK/${bookingRef}
+		           RESERVATION CONFIRMED, ECONOMY (B)|||DURATION: 03:55
+		${dashSep}
+		           MEAL:                     MEAL
+		
+		NON STOP   ${cityOnly(out1From.value)} TO ${cityOnly(out1To.value)}
+		           EQUIPMENT:                ${randomEquip()}
+		
+		${fullSep}\n`;
+		
+		        // Flight 2 (only in Transit mode)
+		if (flightType === 'transit') {
+		    ticket += `FLIGHT     ${out2Flight.value} - ${carrier}|||${formatFullDate(out2Date.value)}
+		${fullSep}
+		DEPARTURE: ${out2From.value}|||${shortDate(out2Date.value)} ${out2DepTime.value}
+		ARRIVAL:   ${out2To.value}|||${shortDate(smartArrivalDate(out2Date.value, out2DepTime.value, out2ArrTime.value))} ${out2ArrTime.value}
+		           FLIGHT BOOKING REF: TK/${bookingRef}
+		           RESERVATION CONFIRMED, ECONOMY (B)|||DURATION: 03:15
+		${dashSep}
+		           MEAL:                     MEAL
+		
+		NON STOP   ${cityOnly(out2From.value)} TO ${cityOnly(out2To.value)}
+		           EQUIPMENT:                ${randomEquip()}
+		
+		${fullSep}\n`;
+		}
+		
+		        // Flight 3 (only in Transit mode)
+		if (flightType === 'transit') {
+		    ticket += `FLIGHT     ${ret1Flight.value} - ${carrier}|||${formatFullDate(ret1Date.value)}
+		${fullSep}
+		DEPARTURE: ${ret1From.value}|||${shortDate(ret1Date.value)} ${ret1DepTime.value}
+		ARRIVAL:   ${ret1To.value}|||${shortDate(smartArrivalDate(ret1Date.value, ret1DepTime.value, ret1ArrTime.value))} ${ret1ArrTime.value}
+		           FLIGHT BOOKING REF: TK/${bookingRef}
+		           RESERVATION CONFIRMED, ECONOMY (L)|||DURATION: 03:15
+		${dashSep}
+		           MEAL:                     MEAL
+		
+		NON STOP   ${cityOnly(ret1From.value)} TO ${cityOnly(ret1To.value)}
+		           EQUIPMENT:                ${randomEquip()}
+		
+		${fullSep}\n`;
+		}
+		
+		        // Flight 4
+		        ticket += `FLIGHT     ${ret2Flight.value} - ${carrier}|||${formatFullDate(ret2Date.value)}
+		${fullSep}
+		DEPARTURE: ${ret2From.value}|||${shortDate(ret2Date.value)} ${ret2DepTime.value}
+		ARRIVAL:   ${ret2To.value}|||${shortDate(smartArrivalDate(ret2Date.value, ret2DepTime.value, ret2ArrTime.value))} ${ret2ArrTime.value}
+		           FLIGHT BOOKING REF: TK/${bookingRef}
+		           RESERVATION CONFIRMED, ECONOMY (L)|||DURATION: 03:55
+		${dashSep}
+		           MEAL:                     MEAL
+		
+		NON STOP   ${cityOnly(ret2From.value)} TO ${cityOnly(ret2To.value)}
+		           EQUIPMENT:                ${randomEquip()}
+		
+		${fullSep}\n`;
 		
         ticket += `FLIGHT(S) CALCULATED AVERAGE CO2 EMISSIONS IS 664.31 KG/PERSON
 SOURCE: ICAO CARBON EMISSIONS CALCULATOR
