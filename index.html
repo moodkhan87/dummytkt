@@ -498,6 +498,40 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
 	    // China & East Asia
 	    "PEK": 8, "PVG": 8, "CAN": 8, "HKG": 8, "ICN": 9, "TPE": 8
 	};
+
+	//  DURATION CALCULATION LOGIC
+    function calculateFlightDuration(depTime, arrTime, depAirport, arrAirport) {
+        if (!depTime || !arrTime) return "00:00";
+
+        // Get UTC offsets (default to 0 if airport not in dictionary)
+        const depOffset = airportTimezones[depAirport] || 0;
+        const arrOffset = airportTimezones[arrAirport] || 0;
+
+        // Convert local times to total minutes from midnight
+        const [depH, depM] = depTime.split(':').map(Number);
+        const [arrH, arrM] = arrTime.split(':').map(Number);
+        
+        let depTotalMins = (depH * 60) + depM;
+        let arrTotalMins = (arrH * 60) + arrM;
+
+        // Convert to UTC minutes
+        depTotalMins -= (depOffset * 60);
+        arrTotalMins -= (arrOffset * 60);
+
+        // Calculate the difference
+        let diffMins = arrTotalMins - depTotalMins;
+
+        // Midnight Crossover Check
+        if (diffMins < 0) {
+            diffMins += 1440; // Add 24 hours (1440 mins)
+        }
+
+        // Format back to HH:MM
+        const hours = Math.floor(diffMins / 60);
+        const mins = diffMins % 60;
+        return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+    }
+	
 	// 🎯 NEW: Smart date logic - checks if flight crosses midnight (PM departure → AM arrival)
 	function smartArrivalDate(departureDate, departureTime, arrivalTime) {
 	    if (!departureDate || !departureTime || !arrivalTime) return departureDate;
