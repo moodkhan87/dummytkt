@@ -143,9 +143,20 @@
             </div>
         </div>
     </div>
-
+	
+	<div style="margin-top: 20px; margin-bottom: 20px; padding: 15px; background: #f4f4f4; border-radius: 5px;">
+	    <h4 style="margin: 0 0 10px 0; font-size: 14px;">Agency Details (Leave blank for default)</h4>
+	    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+	        <input type="text" id="agencyName" placeholder="Agency Name" style="flex: 2; min-width: 200px; padding: 8px;">
+	        <input type="text" id="agencyStreet" placeholder="Street Name" style="flex: 2; min-width: 200px; padding: 8px;">
+	        <input type="text" id="agencyDistrict" placeholder="District" style="flex: 1; min-width: 120px; padding: 8px;">
+	        <input type="text" id="agencyCityZip" placeholder="City / Zipcode" style="flex: 1; min-width: 120px; padding: 8px;">
+	        <input type="text" id="agencyCountry" placeholder="Country" style="flex: 1; min-width: 120px; padding: 8px;">
+	    </div>
+	</div>
+	
     <div class="action-bar">
-        <button class="btn-primary" id="generateBtn"><i class="fas fa-file-pdf"></i> Generate & Download PDF</button>
+        <button class="btn-primary" id="generateBtn"><i class="fas fa-file-pdf"></i> Download PDF</button>
         <button class="btn-secondary" id="clearBtn"><i class="fas fa-undo-alt"></i> Clear form</button>
     </div>
 
@@ -422,6 +433,71 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
         }
         return text.padEnd(maxLen);
     }
+	const airportTimezones = {
+	    // Middle East (Departure Hubs)
+	    "JED": 3, "RUH": 3, "DMM": 3, "DXB": 4, "AUH": 4, "DOH": 3, "BAH": 3, "KWI": 3, "MCT": 4, "CAI": 2, "AMM": 2, "BEY": 2,
+	    
+	    // Turkey
+	    "IST": 3, "SAW": 3, "ESB": 3, "AYT": 3, "ADB": 3, "TBS": 4,
+	    
+	    // UK & Ireland
+	    "LHR": 0, "LGW": 0, "MAN": 0, "BHX": 0, "EDI": 0, "GLA": 0, "DUB": 0, "BFS": 0,
+	    
+	    // France (3 airports)
+	    "CDG": 1, "ORY": 1, "NCE": 1, "LYS": 1, "MRS": 1,
+	    
+	    // Germany (3 airports)
+	    "FRA": 1, "MUC": 1, "BER": 1, "DUS": 1, "HAM": 1,
+	    
+	    // Italy (3 airports)
+	    "FCO": 1, "MXP": 1, "LIN": 1, "VCE": 1, "NAP": 1, "BLQ": 1,
+	    
+	    // Spain (3 airports)
+	    "MAD": 1, "BCN": 1, "PMI": 1, "AGP": 1, "VLC": 1,
+	    
+	    // Switzerland (2 airports)
+	    "ZRH": 1, "GVA": 1, "BSL": 1,
+	    
+	    // Netherlands
+	    "AMS": 1,
+	    
+	    // Belgium
+	    "BRU": 1, "CRL": 1,
+	    
+	    // Austria
+	    "VIE": 1, "SZG": 1,
+	    
+	    // Scandinavia (Capitals + Major)
+	    "CPH": 1, "OSL": 1, "ARN": 1, "GOT": 1, "HEL": 2,
+	    
+	    // Eastern Europe (Capitals)
+	    "WAW": 1, "KRK": 1, "PRG": 1, "BUD": 1, "OTP": 2, "SOF": 2, "ZAG": 1, "BEG": 1,
+	    
+	    // Southern Europe
+	    "ATH": 2, "LIS": 0, "OPO": 0, "LUX": 1,
+	    
+	    // North Africa
+	    "CMN": 1, "RAK": 1, "TUN": 1, "ALG": 1,
+	    
+	    // USA
+	    "JFK": -5, "EWR": -5, "LGA": -5, "LAX": -8, "SFO": -8, "ORD": -6, "MIA": -5, 
+	    "ATL": -5, "DFW": -6, "IAH": -6, "BOS": -5, "SEA": -8, "IAD": -5, "PHL": -5, "DTW": -5,
+	    
+	    // Canada
+	    "YYZ": -5, "YVR": -8, "YUL": -5, "YYC": -7, "YOW": -5, "YEG": -7, "YWG": -6,
+	    
+	    // India
+	    "DEL": 5.5, "BOM": 5.5, "MAA": 5.5, "BLR": 5.5, "HYD": 5.5, "CCU": 5.5, "AMD": 5.5, "COK": 5.5,
+	    
+	    // Japan
+	    "NRT": 9, "HND": 9, "KIX": 9, "NGO": 9,
+	    
+	    // Thailand & Southeast Asia
+	    "BKK": 7, "HKT": 7, "DMK": 7, "KUL": 8, "SIN": 8, "CGK": 7, "MNL": 8, "HAN": 7, "SGN": 7,
+	    
+	    // China & East Asia
+	    "PEK": 8, "PVG": 8, "CAN": 8, "HKG": 8, "ICN": 9, "TPE": 8
+	};
 	// 🎯 NEW: Smart date logic - checks if flight crosses midnight (PM departure → AM arrival)
 	function smartArrivalDate(departureDate, departureTime, arrivalTime) {
 	    if (!departureDate || !departureTime || !arrivalTime) return departureDate;
@@ -445,6 +521,12 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
 	// MAIN TICKET BUILDER - MATCHING ORIGINAL DESIGN
     function buildExactTicket() {
         const carrier = (airlineCarrier.value || "TURKISH AIRLINES").trim().toUpperCase();
+		// Agency Details with Default Fallbacks
+	    const agencyName = document.getElementById('agencyName').value || 'AL MUSAFIR AL AWWAL TOURISM';
+	    const agencyStreet = document.getElementById('agencyStreet').value || 'MADINAH ROAD';
+	    const agencyDistrict = document.getElementById('agencyDistrict').value || 'AR RUWAIS DIST';
+	    const agencyCityZip = document.getElementById('agencyCityZip').value || 'JEDDAH 23214';
+	    const agencyCountry = document.getElementById('agencyCountry').value || 'SAUDI ARABIA';
         const bookingRef = randomBookingRef();
         const ticketDigits = randomTicketDigits();
                 const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
@@ -457,18 +539,18 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
         const fullSep = "-----------------------------------------------------------------------------------------";
         const dashSep = "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 
-        let ticket = `AL MUSAFIR AL AWWAL TOURISM|||BOOKING REF: ${bookingRef}
-MADINAH ROAD|||DATE: ${currentDate}
-AR RUWAIS DIST
-JEDDAH 23214|||${travelers[0]}
+        let ticket = `${agencyName}|||BOOKING REF: ${bookingRef}
+${agencyStreet}|||DATE: ${currentDate}
+${agencyDistrict}
+${agencyCityZip}|||${travelers[0]}
 `;
 
         // Stack remaining passengers (No more padStart needed!)
         for (let i = 1; i < travelers.length; i++) {
-            ticket += `|||${travelers[i]}\n`; 
+            ticket += `|||${travelers[i]}\n`;
         }
 
-        ticket += `SAUDI ARABIA\n\n`;
+        ticket += `${agencyCountry}\n\n`;
 
                 // Define strict max widths for columns
         const maxAirline = 22; 
@@ -480,7 +562,7 @@ ${fullSep}
 DEPARTURE: ${out1From.value}|||${shortDate(out1Date.value)} ${out1DepTime.value}
 ARRIVAL:   ${out1To.value}|||${shortDate(smartArrivalDate(out1Date.value, out1DepTime.value, out1ArrTime.value))} ${out1ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
-           RESERVATION CONFIRMED, ECONOMY (B)|||DURATION: 03:55
+           RESERVATION CONFIRMED, ECONOMY (B)|||DURATION: ${calculateFlightDuration(out1DepTime.value, out1ArrTime.value, out1From.value.split(',')[0].trim(), out1To.value.split(',')[0].trim())}
 ${dashSep}
            MEAL:                     MEAL
 		
@@ -496,7 +578,7 @@ ${fullSep}
 DEPARTURE: ${out2From.value}|||${shortDate(out2Date.value)} ${out2DepTime.value}
 ARRIVAL:   ${out2To.value}|||${shortDate(smartArrivalDate(out2Date.value, out2DepTime.value, out2ArrTime.value))} ${out2ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
-           RESERVATION CONFIRMED, ECONOMY (B)|||DURATION: 03:15
+           RESERVATION CONFIRMED, ECONOMY (B)|||DURATION: ${calculateFlightDuration(out2DepTime.value, out2ArrTime.value, out2From.value.split(',')[0].trim(), out2To.value.split(',')[0].trim())}
 ${dashSep}
            MEAL:                     MEAL
 		
@@ -513,7 +595,7 @@ ${fullSep}
 DEPARTURE: ${ret1From.value}|||${shortDate(ret1Date.value)} ${ret1DepTime.value}
 ARRIVAL:   ${ret1To.value}|||${shortDate(smartArrivalDate(ret1Date.value, ret1DepTime.value, ret1ArrTime.value))} ${ret1ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
-           RESERVATION CONFIRMED, ECONOMY (L)|||DURATION: 03:15
+           RESERVATION CONFIRMED, ECONOMY (L)|||DURATION: ${calculateFlightDuration(ret1DepTime.value, ret1ArrTime.value, ret1From.value.split(',')[0].trim(), ret1To.value.split(',')[0].trim())}
 ${dashSep}
            MEAL:                     MEAL
 	
@@ -529,7 +611,7 @@ ${fullSep}
 DEPARTURE: ${ret2From.value}|||${shortDate(ret2Date.value)} ${ret2DepTime.value}
 ARRIVAL:   ${ret2To.value}|||${shortDate(smartArrivalDate(ret2Date.value, ret2DepTime.value, ret2ArrTime.value))} ${ret2ArrTime.value}
            FLIGHT BOOKING REF: TK/${bookingRef}
-           RESERVATION CONFIRMED, ECONOMY (L)|||DURATION: 03:55
+           RESERVATION CONFIRMED, ECONOMY (L)|||DURATION: ${calculateFlightDuration(ret2DepTime.value, ret2ArrTime.value, ret2From.value.split(',')[0].trim(), ret2To.value.split(',')[0].trim())}
 ${dashSep}
            MEAL:                     MEAL
 
