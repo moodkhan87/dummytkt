@@ -137,7 +137,7 @@
             </div>
             <div id="travelersList">
                 <div class="traveler-item">
-                    <input type="text" placeholder="Full name" value="IRFAN/MUHAMMAD MR">
+                    <input type="text" placeholder="Full name" value="SURNAME/FIRSTNAME MR">
                     <button type="button" class="delete-traveler">✕</button>
                 </div>
             </div>
@@ -395,7 +395,7 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
         const inputs = document.querySelectorAll('#travelersList .traveler-item input');
         let names = [];
         inputs.forEach(inp => { if(inp.value.trim()) names.push(inp.value.trim().toUpperCase()); });
-        return names.length ? names : ["IRFAN/MUHAMMAD MR"];
+        return names.length ? names : ["SURNAME/FIRSTNAME MR"];
     }
 
     function formatFullDate(dateStr) {
@@ -798,7 +798,7 @@ your personal data is collected, stored, used, disclosed and transferred.
         syncFields();
         while(travelersContainer.children.length > 1) travelersContainer.removeChild(travelersContainer.lastChild);
         const first = travelersContainer.querySelector('.traveler-item input');
-        if(first) first.value = "IRFAN/MUHAMMAD MR";
+        if(first) first.value = "SURNAME/FIRSTNAME MR";
         updatePreview();
         setFlightType('transit');
         updatePreview(); 
@@ -960,5 +960,10 @@ setupAirportAutocomplete('out2To');
 setupAirportAutocomplete('ret1To');
 
 </script>
+	<!-- FOOTER -->
+<footer style="text-align: center; padding: 20px; font-size: 12px; color: #888; margin-top: 40px; border-top: 1px solid #e0e0e0;">
+    <div style="margin-bottom: 5px;">Built by Irfan Muhammad & Qwen | Hosted on GitHub</div>
+    <div style="font-size: 10px; font-style: italic; color: #a0a0a0;">Disclaimer: This is a demo site. Generated tickets are for testing and illustration purposes only and are not valid travel documents.</div>
+</footer>
 </body>
 </html>
