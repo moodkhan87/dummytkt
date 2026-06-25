@@ -62,8 +62,40 @@
 .autocomplete-item:hover { background: #f8fafc; }
 .autocomplete-item strong { color: #1e40af; font-weight: bold; }
     </style>
+	<style>
+	    /* Hide everything during print except the ticket preview */
+	    @media print {
+	        body * {
+	            visibility: hidden;
+	        }
+	        .ticket-preview-card, .ticket-preview-card * {
+	            visibility: visible;
+	        }
+	        .ticket-preview-card {
+	            position: absolute;
+	            left: 0;
+	            top: 0;
+	            width: 100%;
+	            margin: 0;
+	            padding: 0;
+	            box-shadow: none;
+	            border: none;
+	        }
+	        /* Hide the copy button during print */
+	        .copy-btn {
+	            display: none !important;
+	        }
+	    }
+	</style>
 </head>
 <body>
+	<!-- HEADER: LOGO & TITLE -->
+<header style="display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px;">
+    <img src="logo.svg" alt="Logo" style="height: 35px; width: auto;">
+    <div style="font-size: 18px; font-weight: bold; color: #333; margin-left: 15px;">
+        Flight Reservation Generator
+    </div>
+</header>
 <div class="container">
     <div class="form-grid">
       <div class="flight-toggle" id="flightTypeToggle">
@@ -154,9 +186,20 @@
 	        <input type="text" id="agencyCountry" placeholder="Country" style="flex: 1; min-width: 120px; padding: 8px;">
 	    </div>
 	</div>
+	<!-- PREVIEW TOGGLE -->
+	<div style="margin-top: 10px; margin-bottom: 10px;">
+	    <label style="display: flex; align-items: center; cursor: pointer; font-size: 13px; color: #555;">
+	        <input type="checkbox" id="showPreviewToggle" checked style="margin-right: 8px; cursor: pointer;">
+	        Show Ticket Preview
+	    </label>
+	</div>
 	
     <div class="action-bar">
         <button class="btn-primary" id="generateBtn"><i class="fas fa-file-pdf"></i> Download PDF</button>
+		<!-- NATIVE PRINT BUTTON -->
+		<button id="printBtn" style="background-color: #4CAF50; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; margin: 0 10px;">
+    		<i class="fas fa-print"></i> Print Ticket
+		</button>
         <button class="btn-secondary" id="clearBtn"><i class="fas fa-undo-alt"></i> Clear form</button>
     </div>
 
@@ -959,10 +1002,29 @@ setupAirportAutocomplete('out1To');
 setupAirportAutocomplete('out2To');
 setupAirportAutocomplete('ret1To');
 
+	// Preview Toggle Logic
+const previewToggle = document.getElementById('showPreviewToggle');
+const previewSection = document.querySelector('.ticket-preview-card'); // Targets your exact preview block
+
+if(previewToggle && previewSection) {
+    previewToggle.addEventListener('change', function() {
+        if (this.checked) {
+            previewSection.style.display = 'block';
+        } else {
+            previewSection.style.display = 'none';
+        }
+    });
+}
+
+	// Print Button Logic
+document.getElementById('printBtn').addEventListener('click', function() {
+    window.print();
+});
+	
 </script>
 	<!-- FOOTER -->
 <footer style="text-align: center; padding: 20px; font-size: 12px; color: #888; margin-top: 40px; border-top: 1px solid #e0e0e0;">
-    <div style="margin-bottom: 5px;">Built by Irfan Muhammad & Qwen | Hosted on GitHub</div>
+    <div style="margin-bottom: 5px;">Built by MK & Qwen | Hosted on GitHub</div>
     <div style="font-size: 10px; font-style: italic; color: #a0a0a0;">Disclaimer: This is a demo site. Generated tickets are for testing and illustration purposes only and are not valid travel documents.</div>
 </footer>
 </body>
