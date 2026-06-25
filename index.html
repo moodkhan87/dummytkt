@@ -820,6 +820,116 @@ your personal data is collected, stored, used, disclosed and transferred.
 
         doc.save(`Flight_${(out1Flight.value || 'TK')}_${randomBookingRef()}.pdf`);
     }
+	async function printPDF() {
+        const fullText = buildExactTicket();
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        
+        // 🎯 UPDATED: Increased font size and adjusted margins for a professional look
+        doc.setFont('courier', 'normal');
+        doc.setFontSize(9); // Increased from 8pt to 9pt
+
+        const marginLeft = 10; // Increased from 8mm
+        const marginTop = 12;  // Increased from 10mm
+        const lineHeight = 4.2; // Increased from 3.6mm for better breathing room
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const maxChars = 115; // 🎯 UPDATED: Increased from 95 to stretch text to the right margin
+
+        let y = marginTop;
+
+        // 🎯 NEW: Helper function to prevent orphaned headers
+        function checkPage(linesNeeded) {
+            // If the remaining space on the page is less than the lines needed, start a new page
+            if (y + (linesNeeded * lineHeight) > pageHeight - 15) {
+                doc.addPage();
+                y = marginTop;
+            }
+        }
+
+        const lines = fullText.split('\n');
+
+        // 🎯 CHANGED: Moved from 190 to 185. This increases the right white space to 2.5 cm.
+        // (If you want 3 cm, change this number to 180)
+        const rightAlignX = 180; 
+		
+        lines.forEach(line => {
+            // 🎯 NEW: Trigger page checks right before specific sections
+            if (line.trim() === 'FLIGHT TICKET(S)') {
+                checkPage(5); 
+            }
+            if (line.startsWith('Data Protection Notice:')) {
+                checkPage(10); 
+            }
+
+            // Safety net: if we somehow exceed the page height, force a new page
+            if (line.length > 0 && y > pageHeight - 15) {
+                doc.addPage();
+                y = marginTop;
+            }
+
+            // Reset colors to black for every new line by default
+            doc.setTextColor(0, 0, 0);
+
+            // 🎯 1. HANDLE THE "SPLIT" (Left and Right alignment)
+            if (line.includes('|||')) {
+                const parts = line.split('|||');
+                const leftText = parts[0];
+                const rightText = parts[1].trim();
+
+                // Draw left side at the left margin
+                doc.text(leftText, marginLeft, y);
+                
+                // Draw right side glued to the right margin
+                doc.text(rightText, rightAlignX, y, { align: 'right' });
+                
+                y += lineHeight;
+                return; // Skip to the next line
+            }
+
+            // 🎯 2. STANDARD TEXT RENDERING (For everything else including dashes)
+            if (line.trim() === 'https://www.icao.int/environmental-protection/CarbonOffset/Pages/default.aspx') {
+                doc.setTextColor(0, 0, 255); 
+                doc.text(line, marginLeft, y);
+                const textWidth = doc.getTextWidth(line);
+                doc.setDrawColor(0, 0, 255); 
+                doc.line(marginLeft, y + 1, marginLeft + textWidth, y + 1); 
+                y += lineHeight;
+            } 
+            else if (line.length <= maxChars) {
+                doc.text(line, marginLeft, y);
+                y += lineHeight;
+            } else {
+                // Word wrap long lines
+                const words = line.split(' ');
+                let currentLine = '';
+                words.forEach(word => {
+                    const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                    if (testLine.length <= maxChars) {
+                        currentLine = testLine;
+                    } else {
+                        doc.text(currentLine, marginLeft, y);
+                        y += lineHeight;
+                        currentLine = word;
+                    }
+                });
+                if (currentLine) {
+                    doc.text(currentLine, marginLeft, y);
+                    y += lineHeight;
+                }
+            }
+        });
+
+       // Generate the PDF in memory and open in a new tab for printing
+	   const pdfBlob = doc.output('blob');
+	   const pdfUrl = URL.createObjectURL(pdfBlob);
+	   const printWindow = window.open(pdfUrl, '_blank');
+	   
+	   // Automatically trigger the print dialog when the PDF opens
+	   if (printWindow) {
+	       printWindow.onload = function() {
+	           setTimeout(() => printWindow.print(), 500);
+	       };
+	   }
+    }
 
     function onGenerate() {
         syncFields();
@@ -1018,7 +1128,7 @@ if(previewToggle && previewSection) {
 
 	// Print Button Logic
 document.getElementById('printBtn').addEventListener('click', function() {
-    window.print();
+    printPDF();
 });
 	
 </script>
