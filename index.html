@@ -1186,25 +1186,31 @@ if(previewToggle && previewSection) {
 document.getElementById('printBtn').addEventListener('click', function() {
     printPDF();
 });
-	// Guide Modal Logic
-	const guideBtn = document.getElementById('guideBtn');
-	const guideModal = document.getElementById('guideModal');
-	const closeGuideBtn = document.getElementById('closeGuideBtn');
-	
-	guideBtn.addEventListener('click', () => {
-	    guideModal.style.display = 'flex';
-	});
-	
-	closeGuideBtn.addEventListener('click', () => {
-	    guideModal.style.display = 'none';
-	});
-	
-	// Close modal if user clicks outside the content box
-	window.addEventListener('click', (event) => {
-	    if (event.target == guideModal) {
-	        guideModal.style.display = 'none';
-	    }
-	});
+	// Guide Modal Logic (Runs only after page is fully loaded)
+document.addEventListener('DOMContentLoaded', function() {
+    const guideBtn = document.getElementById('guideBtn');
+    const guideModal = document.getElementById('guideModal');
+    const closeGuideBtn = document.getElementById('closeGuideBtn');
+
+    // Safety check to make sure the elements actually exist
+    if (guideBtn && guideModal && closeGuideBtn) {
+        
+        guideBtn.addEventListener('click', () => {
+            guideModal.style.display = 'flex';
+        });
+
+        closeGuideBtn.addEventListener('click', () => {
+            guideModal.style.display = 'none';
+        });
+
+        // Close modal if user clicks outside the content box
+        window.addEventListener('click', (event) => {
+            if (event.target == guideModal) {
+                guideModal.style.display = 'none';
+            }
+        });
+    }
+});
 	
 </script>
 	<!-- FOOTER -->
