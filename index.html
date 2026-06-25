@@ -86,14 +86,70 @@
 	            display: none !important;
 	        }
 	    }
+		        /* Guide Modal Styles */
+        .modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); /* Black with opacity */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+        .modal-content h4 {
+            margin-bottom: 5px;
+            color: #000;
+        }
+        .modal-content ul {
+            margin-top: 5px;
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+        .modal-close {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: #333; }
 	</style>
 </head>
 <body>
-	<!-- HEADER: LOGO & TITLE -->
-<header style="display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px;">
-    <img src="logo.svg" alt="Logo" style="height: 35px; width: auto;">
-    <div style="font-size: 18px; font-weight: bold; color: #333; margin-left: 15px;">
-        Flight Reservation Generator
+<!-- HEADER: LOGO, TITLE & GUIDE BUTTON -->
+<header style="display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px;">
+    <!-- Left Side: Logo & Title -->
+    <div style="display: flex; align-items: center;">
+        <img src="logo.svg" alt="Logo" style="height: 35px; width: auto;">
+        <div style="font-size: 18px; font-weight: bold; color: #333; margin-left: 15px;">
+            Flight Reservation Generator
+        </div>
+    </div>
+    
+    <!-- Right Side: Utility Buttons -->
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <button id="guideBtn" style="background: none; border: 1px solid #ccc; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; color: #333;">
+            <i class="fas fa-question-circle"></i> Guide
+        </button>
+        <!-- Dark mode toggle will go right here later! -->
     </div>
 </header>
 <div class="container">
@@ -1130,6 +1186,25 @@ if(previewToggle && previewSection) {
 document.getElementById('printBtn').addEventListener('click', function() {
     printPDF();
 });
+	// Guide Modal Logic
+	const guideBtn = document.getElementById('guideBtn');
+	const guideModal = document.getElementById('guideModal');
+	const closeGuideBtn = document.getElementById('closeGuideBtn');
+	
+	guideBtn.addEventListener('click', () => {
+	    guideModal.style.display = 'flex';
+	});
+	
+	closeGuideBtn.addEventListener('click', () => {
+	    guideModal.style.display = 'none';
+	});
+	
+	// Close modal if user clicks outside the content box
+	window.addEventListener('click', (event) => {
+	    if (event.target == guideModal) {
+	        guideModal.style.display = 'none';
+	    }
+	});
 	
 </script>
 	<!-- FOOTER -->
@@ -1137,5 +1212,38 @@ document.getElementById('printBtn').addEventListener('click', function() {
     <div style="margin-bottom: 5px;">Built by MK & Qwen | Hosted on GitHub</div>
     <div style="font-size: 10px; font-style: italic; color: #a0a0a0;">Disclaimer: This is a demo site. Generated tickets are for testing and illustration purposes only and are not valid travel documents.</div>
 </footer>
+	<!-- GUIDE POPUP MODAL -->
+<div id="guideModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close" id="closeGuideBtn">&times;</button>
+        <h2 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">How to Use This Tool</h2>
+        
+        <h4>1. The Two Approaches</h4>
+        <ul>
+            <li><strong>Quick Mode:</strong> Just enter any random dates and flight numbers for a generic ticket.</li>
+            <li><strong>Pro Mode (Recommended):</strong> Use real flight data to make your ticket look 100% authentic.</li>
+        </ul>
+
+        <h4>2. Where to Find Real Flight Data</h4>
+        <ul>
+            <li><strong>Google Flights / Skyscanner:</strong> For schedules and routes.</li>
+            <li><strong>FlightRadar24.com:</strong> For exact flight numbers (e.g., TK 198).</li>
+            <li><strong>Airline Websites:</strong> For terminal and equipment info.</li>
+        </ul>
+
+        <h4>3. Smart Features</h4>
+        <ul>
+            <li><strong>Auto-Duration:</strong> Just enter departure/arrival times, the tool calculates the exact duration automatically!</li>
+            <li><strong>Timezone Adjustments:</strong> Automatically adjusts for time differences.</li>
+            <li><strong>Smart Dates:</strong> Automatically updates the arrival date if the flight crosses midnight.</li>
+        </ul>
+
+        <h4>4. Keyboard Shortcuts</h4>
+        <ul>
+            <li><strong>Ctrl + Enter:</strong> Generate & Download PDF</li>
+            <li><strong>Ctrl + Shift + C:</strong> Clear Form</li>
+        </ul>
+    </div>
+</div>
 </body>
 </html>
