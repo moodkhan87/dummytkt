@@ -162,7 +162,7 @@
 	        <i class="fas fa-plane"></i> Direct
 	    </button>
 </div>
-        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 10px;">
+        <div id="outboundHeadersContainer" style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 10px;">
     <div style="flex:1" id="outboundHeader1"><h3><i class="fas fa-plane-departure"></i> OUTBOUND (JED → IST)</h3></div>
     <div style="flex:1" id="outboundHeader2"><h3><i class="fas fa-plane"></i> OUTBOUND (IST → GVA)</h3></div>
 </div>
@@ -193,7 +193,7 @@
             </div>
         </div>
 
-        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0 10px;">
+         <div id="returnHeadersContainer" style="display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0 10px;">
             <div style="flex:1" id="returnHeader1"><h3><i class="fas fa-plane-arrival"></i> RETURN (GVA → IST)</h3></div>
             <div style="flex:1" id="returnHeader2"><h3><i class="fas fa-plane"></i> RETURN (IST → JED)</h3></div>
         </div>
@@ -394,9 +394,11 @@ const returnLeg2Card = document.getElementById('returnLeg2Card');
 function setFlightType(type) {
     flightType = type;
     
-    // Grab the two flight rows from the HTML
+    // Grab the containers
     const row1 = document.querySelector('.flight-row');
     const row2 = document.querySelectorAll('.flight-row')[1];
+    const outboundHeadersContainer = document.getElementById('outboundHeadersContainer');
+    const returnHeadersContainer = document.getElementById('returnHeadersContainer');
 
     if (type === 'direct') {
         directBtn.classList.add('active');
@@ -408,9 +410,14 @@ function setFlightType(type) {
         returnHeader1.style.display = 'none';
         returnLeg1Card.style.display = 'none';
 
-        // 🎯 MAGIC TRICK: Move the Return card into the first row so it sits side-by-side with Outbound!
+        // 🎯 MAGIC TRICK 1: Move the Return card into the first row
         if (returnLeg2Card.parentNode !== row1) {
             row1.appendChild(returnLeg2Card);
+        }
+        
+        // 🎯 MAGIC TRICK 2: Move the Return header into the top header row
+        if (returnHeader2.parentNode !== outboundHeadersContainer) {
+            outboundHeadersContainer.appendChild(returnHeader2);
         }
 
         // Update headers to generic labels
@@ -426,9 +433,14 @@ function setFlightType(type) {
         returnHeader1.style.display = '';
         returnLeg1Card.style.display = '';
 
-        // 🎯 MAGIC TRICK: Move the Return card back to the second row for the Transit layout
+        // 🎯 MAGIC TRICK 1: Move the Return card back to the second row
         if (returnLeg2Card.parentNode !== row2) {
             row2.appendChild(returnLeg2Card);
+        }
+        
+        // 🎯 MAGIC TRICK 2: Move the Return header back to the bottom header row
+        if (returnHeader2.parentNode !== returnHeadersContainer) {
+            returnHeadersContainer.appendChild(returnHeader2);
         }
 
         // Restore original header labels
