@@ -166,55 +166,55 @@
     <div style="flex:1" id="outboundHeader1"><h3><i class="fas fa-plane-departure"></i> OUTBOUND (JED → IST)</h3></div>
     <div style="flex:1" id="outboundHeader2"><h3><i class="fas fa-plane"></i> OUTBOUND (IST → GVA)</h3></div>
 </div>
-        <div class="flight-row">
+                <div class="flight-row">
             <div class="flight-card" id="outboundLeg1Card">
                 <h4>Leg 1 · JED → IST</h4>
                 
                 <div class="input-group">
                     <label>AIRLINES CARRIER</label>
-                    <input type="text" id="airlineCarrier" value="TURKISH AIRLINES" style="font-weight: bold; color: #1e40af;">
+                    <input type="text" id="airlineCarrier" placeholder="e.g. TURKISH AIRLINES" style="font-weight: bold; color: #1e40af;">
                 </div>
                 
-                <div class="input-group"><label>Travel Date</label><input type="date" id="out1Date" value="2026-06-01"></div>
-                <div class="input-group"><label>Departure Time</label><input type="time" id="out1DepTime" value="06:25"></div>
-                <div class="input-group"><label>Arrival Time</label><input type="time" id="out1ArrTime" value="10:20"></div>
-                <div class="input-group"><label>Departure From</label><input type="text" id="out1From" value="JEDDAH, SA(KING ABDULAZIZ INTL), TERMINAL 1"></div>
-                <div class="input-group"><label>Arrival In</label><input type="text" id="out1To" value="ISTANBUL, TR(ISTANBUL AIRPORT)"></div>
-                <div class="input-group"><label>Flight Number</label><input type="text" id="out1Flight" value="TK 097"></div>
+                <div class="input-group"><label>Travel Date</label><input type="date" id="out1Date"></div>
+                <div class="input-group"><label>Departure Time</label><input type="time" id="out1DepTime"></div>
+                <div class="input-group"><label>Arrival Time</label><input type="time" id="out1ArrTime"></div>
+                <div class="input-group"><label>Departure From</label><input type="text" id="out1From" placeholder="e.g. JEDDAH, SA(KING ABDULAZIZ INTL), TERMINAL 1"></div>
+                <div class="input-group"><label>Arrival In</label><input type="text" id="out1To" placeholder="e.g. ISTANBUL, TR(ISTANBUL AIRPORT)"></div>
+                <div class="input-group"><label>Flight Number</label><input type="text" id="out1Flight" placeholder="e.g. TK 097"></div>
             </div>
             <div class="flight-card" id="outboundLeg2Card">
                 <h4>Leg 2 · IST → GVA</h4>
-                <div class="input-group"><label>Travel Date (same day)</label><input type="date" id="out2Date" value="2026-06-01"></div>
-                <div class="input-group"><label>Departure Time</label><input type="time" id="out2DepTime" value="11:30"></div>
-                <div class="input-group"><label>Arrival Time</label><input type="time" id="out2ArrTime" value="13:45"></div>
+                <div class="input-group"><label>Travel Date (same day)</label><input type="date" id="out2Date"></div>
+                <div class="input-group"><label>Departure Time</label><input type="time" id="out2DepTime"></div>
+                <div class="input-group"><label>Arrival Time</label><input type="time" id="out2ArrTime"></div>
                 <div class="input-group"><label>Departure From (auto)</label><input type="text" id="out2From" readonly class="auto-field"></div>
-                <div class="input-group"><label>Arrival In</label><input type="text" id="out2To" value="GENEVA, CH(GENEVA INTERNATIONAL), TERMINAL 1"></div>
-                <div class="input-group"><label>Flight Number</label><input type="text" id="out2Flight" value="TK 1921"></div>
+                <div class="input-group"><label>Arrival In</label><input type="text" id="out2To" placeholder="e.g. GENEVA, CH(GENEVA INTERNATIONAL), TERMINAL 1"></div>
+                <div class="input-group"><label>Flight Number</label><input type="text" id="out2Flight" placeholder="e.g. TK 1921"></div>
             </div>
         </div>
 
         <div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0 10px;">
-    <div style="flex:1" id="returnHeader1"><h3><i class="fas fa-plane-arrival"></i> RETURN (GVA → IST)</h3></div>
-    <div style="flex:1" id="returnHeader2"><h3><i class="fas fa-plane"></i> RETURN (IST → JED)</h3></div>
-</div>
+            <div style="flex:1" id="returnHeader1"><h3><i class="fas fa-plane-arrival"></i> RETURN (GVA → IST)</h3></div>
+            <div style="flex:1" id="returnHeader2"><h3><i class="fas fa-plane"></i> RETURN (IST → JED)</h3></div>
+        </div>
         <div class="flight-row">
             <div class="flight-card" id="returnLeg1Card">
                 <h4>Leg 1 · GVA → IST</h4>
-                <div class="input-group"><label>Return Date</label><input type="date" id="ret1Date" value="2026-06-10"></div>
-                <div class="input-group"><label>Departure Time</label><input type="time" id="ret1DepTime" value="14:40"></div>
-                <div class="input-group"><label>Arrival Time</label><input type="time" id="ret1ArrTime" value="18:55"></div>
+                <div class="input-group"><label>Return Date</label><input type="date" id="ret1Date"></div>
+                <div class="input-group"><label>Departure Time</label><input type="time" id="ret1DepTime"></div>
+                <div class="input-group"><label>Arrival Time</label><input type="time" id="ret1ArrTime"></div>
                 <div class="input-group"><label>Departure From (auto)</label><input type="text" id="ret1From" readonly class="auto-field"></div>
-                <div class="input-group"><label>Arrival In</label><input type="text" id="ret1To" value="ISTANBUL, TR(ISTANBUL AIRPORT)"></div>
-                <div class="input-group"><label>Flight Number</label><input type="text" id="ret1Flight" value="TK 1922"></div>
+                <div class="input-group"><label>Arrival In</label><input type="text" id="ret1To" placeholder="e.g. ISTANBUL, TR(ISTANBUL AIRPORT)"></div>
+                <div class="input-group"><label>Flight Number</label><input type="text" id="ret1Flight" placeholder="e.g. TK 1922"></div>
             </div>
             <div class="flight-card" id="returnLeg2Card">
                 <h4>Leg 2 · IST → JED</h4>
-                <div class="input-group"><label>Return Date</label><input type="date" id="ret2Date" value="2026-06-10"></div>
-                <div class="input-group"><label>Departure Time</label><input type="time" id="ret2DepTime" value="20:20"></div>
-                <div class="input-group"><label>Arrival Time</label><input type="time" id="ret2ArrTime" value="00:15"></div>
+                <div class="input-group"><label>Return Date</label><input type="date" id="ret2Date"></div>
+                <div class="input-group"><label>Departure Time</label><input type="time" id="ret2DepTime"></div>
+                <div class="input-group"><label>Arrival Time</label><input type="time" id="ret2ArrTime"></div>
                 <div class="input-group"><label>Departure From (auto)</label><input type="text" id="ret2From" readonly class="auto-field"></div>
                 <div class="input-group"><label>Arrival In (auto)</label><input type="text" id="ret2To" readonly class="auto-field"></div>
-                <div class="input-group"><label>Flight Number</label><input type="text" id="ret2Flight" value="TK 094"></div>
+                <div class="input-group"><label>Flight Number</label><input type="text" id="ret2Flight" placeholder="e.g. TK 094"></div>
             </div>
         </div>
 
@@ -225,7 +225,7 @@
             </div>
             <div id="travelersList">
                 <div class="traveler-item">
-                    <input type="text" placeholder="Full name" value="SURNAME/FIRSTNAME MR">
+                    <input type="text" placeholder="e.g. SURNAME/FIRSTNAME MR">
                     <button type="button" class="delete-traveler">✕</button>
                 </div>
             </div>
@@ -1209,6 +1209,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 guideModal.style.display = 'none';
             }
         });
+    }
+});
+	// Keyboard Shortcuts Logic
+document.addEventListener('keydown', function(event) {
+    const isCtrlOrCmd = event.ctrlKey || event.metaKey; // metaKey is for Mac users (Cmd key)
+
+    // 1. Ctrl + Enter: Generate & Download PDF
+    if (isCtrlOrCmd && event.key === 'Enter') {
+        event.preventDefault(); // Stops the browser from doing default actions
+        if (typeof downloadPDF === 'function') {
+            downloadPDF();
+        }
+    }
+
+    // 2. Ctrl + Shift + C: Clear Form
+    if (isCtrlOrCmd && event.shiftKey && event.key.toLowerCase() === 'c') {
+        event.preventDefault();
+        
+        // IMPORTANT: Change 'clearBtn' below to the actual ID of your Clear button!
+        const clearBtn = document.getElementById('clearBtn'); 
+        if (clearBtn) {
+            clearBtn.click();
+        }
     }
 });
 	
