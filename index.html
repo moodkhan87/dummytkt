@@ -393,29 +393,43 @@ const returnLeg2Card = document.getElementById('returnLeg2Card');
 
 function setFlightType(type) {
     flightType = type;
+    
+    // Grab the two flight rows from the HTML
+    const row1 = document.querySelector('.flight-row');
+    const row2 = document.querySelectorAll('.flight-row')[1];
 
     if (type === 'direct') {
         directBtn.classList.add('active');
         transitBtn.classList.remove('active');
 
-        // Hide the middle two flight cards + their headers
+        // Hide the middle transit cards and headers
         outboundHeader2.style.display = 'none';
         outboundLeg2Card.style.display = 'none';
         returnHeader1.style.display = 'none';
         returnLeg1Card.style.display = 'none';
 
-        // Update visible headers to generic labels
+        // 🎯 MAGIC TRICK: Move the Return card into the first row so it sits side-by-side with Outbound!
+        if (returnLeg2Card.parentNode !== row1) {
+            row1.appendChild(returnLeg2Card);
+        }
+
+        // Update headers to generic labels
         outboundHeader1.querySelector('h3').innerHTML = '<i class="fas fa-plane-departure"></i> OUTBOUND';
         returnHeader2.querySelector('h3').innerHTML = '<i class="fas fa-plane-arrival"></i> RETURN';
     } else {
         transitBtn.classList.add('active');
         directBtn.classList.remove('active');
 
-        // Show everything again
+        // Show all transit cards and headers
         outboundHeader2.style.display = '';
         outboundLeg2Card.style.display = '';
         returnHeader1.style.display = '';
         returnLeg1Card.style.display = '';
+
+        // 🎯 MAGIC TRICK: Move the Return card back to the second row for the Transit layout
+        if (returnLeg2Card.parentNode !== row2) {
+            row2.appendChild(returnLeg2Card);
+        }
 
         // Restore original header labels
         outboundHeader1.querySelector('h3').innerHTML = '<i class="fas fa-plane-departure"></i> OUTBOUND (JED → IST)';
@@ -425,7 +439,6 @@ function setFlightType(type) {
     syncFields();
     updatePreview();
 }
-
 transitBtn.addEventListener('click', () => setFlightType('transit'));
 directBtn.addEventListener('click', () => setFlightType('direct'));
 
@@ -994,24 +1007,41 @@ your personal data is collected, stored, used, disclosed and transferred.
     }
 
     function clearAll() {
-        out1Date.value = "2026-06-01"; out1DepTime.value = "06:25"; out1ArrTime.value = "10:20"; 
-        out1From.value = "JEDDAH, SA(KING ABDULAZIZ INTL), TERMINAL 1"; 
-        out1To.value = "ISTANBUL, TR(ISTANBUL AIRPORT)"; out1Flight.value = "TK 097";
-        out2Date.value = "2026-06-01"; out2DepTime.value = "11:30"; out2ArrTime.value = "13:45"; 
-        out2To.value = "GENEVA, CH(GENEVA INTERNATIONAL), TERMINAL 1"; out2Flight.value = "TK 1921";
-        ret1Date.value = "2026-06-10"; ret1DepTime.value = "14:40"; ret1ArrTime.value = "18:55"; 
-        ret1To.value = "ISTANBUL, TR(ISTANBUL AIRPORT)"; ret1Flight.value = "TK 1922";
-        ret2Date.value = "2026-06-10"; ret2DepTime.value = "20:20"; ret2ArrTime.value = "00:15"; 
-        ret2Flight.value = "TK 094";
-        airlineCarrier.value = "TURKISH AIRLINES";
-        syncFields();
-        while(travelersContainer.children.length > 1) travelersContainer.removeChild(travelersContainer.lastChild);
-        const first = travelersContainer.querySelector('.traveler-item input');
-        if(first) first.value = "SURNAME/FIRSTNAME MR";
-        updatePreview();
-        setFlightType('direct');
-        updatePreview(); 
-    }
+	    // 🎯 NEW: Clear all flight inputs completely (leave them blank)
+	    out1Date.value = ""; out1DepTime.value = ""; out1ArrTime.value = ""; 
+	    out1From.value = ""; out1To.value = ""; out1Flight.value = "";
+	    
+	    out2Date.value = ""; out2DepTime.value = ""; out2ArrTime.value = ""; 
+	    out2To.value = ""; out2Flight.value = "";
+	    
+	    ret1Date.value = ""; ret1DepTime.value = ""; ret1ArrTime.value = ""; 
+	    ret1To.value = ""; ret1Flight.value = "";
+	    
+	    ret2Date.value = ""; ret2DepTime.value = ""; ret2ArrTime.value = ""; 
+	    ret2To.value = ""; ret2Flight.value = "";
+	    
+	    airlineCarrier.value = "";
+	    
+	    // Clear agency details too
+	    document.getElementById('agencyName').value = "";
+	    document.getElementById('agencyStreet').value = "";
+	    document.getElementById('agencyDistrict').value = "";
+	    document.getElementById('agencyCityZip').value = "";
+	    document.getElementById('agencyCountry').value = "";
+	
+	    syncFields();
+	    
+	    // Remove extra travelers
+	    while(travelersContainer.children.length > 1) travelersContainer.removeChild(travelersContainer.lastChild);
+	    
+	    // 🎯 NEW: Clear the first traveler's name completely
+	    const first = travelersContainer.querySelector('.traveler-item input');
+	    if(first) first.value = "";
+	    
+	    updatePreview();
+	    setFlightType('direct');
+	    updatePreview(); 
+	}
 
     function addTraveler() {
         const div = document.createElement('div');
