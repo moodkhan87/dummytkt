@@ -155,12 +155,12 @@
 <div class="container">
     <div class="form-grid">
       <div class="flight-toggle" id="flightTypeToggle">
-    <button type="button" id="transitBtn" class="active">
-        <i class="fas fa-exchange-alt"></i> Transit
-    </button>
-    <button type="button" id="directBtn">
-        <i class="fas fa-plane"></i> Direct
-    </button>
+	    <button type="button" id="transitBtn">
+	        <i class="fas fa-exchange-alt"></i> Transit
+	    </button>
+	    <button type="button" id="directBtn" class="active">
+	        <i class="fas fa-plane"></i> Direct
+	    </button>
 </div>
         <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 10px;">
     <div style="flex:1" id="outboundHeader1"><h3><i class="fas fa-plane-departure"></i> OUTBOUND (JED → IST)</h3></div>
@@ -378,7 +378,7 @@ async function loadAirports() {
 }
 
   // ===== FLIGHT TYPE TOGGLE (Direct / Transit) =====
-let flightType = 'transit'; // default mode
+let flightType = 'direct'; // default mode
 
 const transitBtn = document.getElementById('transitBtn');
 const directBtn = document.getElementById('directBtn');
@@ -1009,7 +1009,7 @@ your personal data is collected, stored, used, disclosed and transferred.
         const first = travelersContainer.querySelector('.traveler-item input');
         if(first) first.value = "SURNAME/FIRSTNAME MR";
         updatePreview();
-        setFlightType('transit');
+        setFlightType('direct');
         updatePreview(); 
     }
 
@@ -1041,6 +1041,7 @@ your personal data is collected, stored, used, disclosed and transferred.
     allInputs.forEach(i => i.addEventListener('input', updatePreview));
 
     // Initialize
+	setFlightType('direct');
     updatePreview();
     syncFields();
 
