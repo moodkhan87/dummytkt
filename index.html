@@ -679,12 +679,12 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
 	// MAIN TICKET BUILDER - MATCHING ORIGINAL DESIGN
     function buildExactTicket() {
         const carrier = (airlineCarrier.value || "TURKISH AIRLINES").trim().toUpperCase();
-		// Agency Details with Default Fallbacks
-	    const agencyName = document.getElementById('agencyName').value || 'AL MUSAFIR AL AWWAL TOURISM';
-	    const agencyStreet = document.getElementById('agencyStreet').value || 'MADINAH ROAD';
-	    const agencyDistrict = document.getElementById('agencyDistrict').value || 'AR RUWAIS DIST';
-	    const agencyCityZip = document.getElementById('agencyCityZip').value || 'JEDDAH 23214';
-	    const agencyCountry = document.getElementById('agencyCountry').value || 'SAUDI ARABIA';
+	    // Agency Details with Default Fallbacks (Forced Uppercase)
+        const agencyName = (document.getElementById('agencyName').value || 'AL MUSAFIR AL AWWAL TOURISM').toUpperCase();
+        const agencyStreet = (document.getElementById('agencyStreet').value || 'MADINAH ROAD').toUpperCase();
+        const agencyDistrict = (document.getElementById('agencyDistrict').value || 'AR RUWAIS DIST').toUpperCase();
+        const agencyCityZip = (document.getElementById('agencyCityZip').value || 'JEDDAH 23214').toUpperCase();
+        const agencyCountry = (document.getElementById('agencyCountry').value || 'SAUDI ARABIA').toUpperCase();
         const bookingRef = randomBookingRef();
         const ticketDigits = randomTicketDigits();
                 const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
