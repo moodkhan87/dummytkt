@@ -679,6 +679,18 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
 	// MAIN TICKET BUILDER - MATCHING ORIGINAL DESIGN
     function buildExactTicket() {
         const carrier = (airlineCarrier.value || "TURKISH AIRLINES").trim().toUpperCase();
+		// Extract the official 2-letter airline code by matching the carrier name
+		let airlineCode = "TK"; // Default fallback
+		const userCarrier = carrier.toUpperCase();
+		
+		// Search the AIRLINES array for a match
+		const matchedAirline = AIRLINES.find(airline => 
+		    userCarrier.includes(airline.name.toUpperCase())
+		);
+		
+		if (matchedAirline) {
+		    airlineCode = matchedAirline.code;
+		}
 	    // Agency Details with Default Fallbacks (Forced Uppercase)
         const agencyName = (document.getElementById('agencyName').value || 'AL MUSAFIR AL AWWAL TOURISM').toUpperCase();
         const agencyStreet = (document.getElementById('agencyStreet').value || 'MADINAH ROAD').toUpperCase();
@@ -701,14 +713,14 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
 ${agencyStreet}|||DATE: ${currentDate}
 ${agencyDistrict}
 ${agencyCityZip}|||${travelers[0]}
-`;
+${agencyCountry}|||\n`;
 
         // Stack remaining passengers (No more padStart needed!)
         for (let i = 1; i < travelers.length; i++) {
             ticket += `|||${travelers[i]}\n`;
         }
 
-        ticket += `${agencyCountry}\n\n`;
+        ticket += `\n`; // Add a small gap before the flight details start
 
                 // Define strict max widths for columns
         const maxAirline = 22; 
@@ -719,7 +731,7 @@ ${agencyCityZip}|||${travelers[0]}
 ${fullSep}
 DEPARTURE: ${out1From.value}|||${shortDate(out1Date.value)} ${out1DepTime.value}
 ARRIVAL:   ${out1To.value}|||${shortDate(smartArrivalDate(out1Date.value, out1DepTime.value, out1ArrTime.value))} ${out1ArrTime.value}
-           FLIGHT BOOKING REF: TK/${bookingRef}
+           FLIGHT BOOKING REF: ${airlineCode}/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (B)|||DURATION: ${calculateFlightDuration(out1DepTime.value, out1ArrTime.value, out1From.value.split(',')[0].trim(), out1To.value.split(',')[0].trim())}
 ${dashSep}
            MEAL:                     MEAL
@@ -735,7 +747,7 @@ if (flightType === 'transit') {
 ${fullSep}
 DEPARTURE: ${out2From.value}|||${shortDate(out2Date.value)} ${out2DepTime.value}
 ARRIVAL:   ${out2To.value}|||${shortDate(smartArrivalDate(out2Date.value, out2DepTime.value, out2ArrTime.value))} ${out2ArrTime.value}
-           FLIGHT BOOKING REF: TK/${bookingRef}
+           FLIGHT BOOKING REF: ${airlineCode}/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (B)|||DURATION: ${calculateFlightDuration(out2DepTime.value, out2ArrTime.value, out2From.value.split(',')[0].trim(), out2To.value.split(',')[0].trim())}
 ${dashSep}
            MEAL:                     MEAL
@@ -752,7 +764,7 @@ if (flightType === 'transit') {
 ${fullSep}
 DEPARTURE: ${ret1From.value}|||${shortDate(ret1Date.value)} ${ret1DepTime.value}
 ARRIVAL:   ${ret1To.value}|||${shortDate(smartArrivalDate(ret1Date.value, ret1DepTime.value, ret1ArrTime.value))} ${ret1ArrTime.value}
-           FLIGHT BOOKING REF: TK/${bookingRef}
+           FLIGHT BOOKING REF: ${airlineCode}/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (L)|||DURATION: ${calculateFlightDuration(ret1DepTime.value, ret1ArrTime.value, ret1From.value.split(',')[0].trim(), ret1To.value.split(',')[0].trim())}
 ${dashSep}
            MEAL:                     MEAL
@@ -768,7 +780,7 @@ ${fullSep}\n`;
 ${fullSep}
 DEPARTURE: ${ret2From.value}|||${shortDate(ret2Date.value)} ${ret2DepTime.value}
 ARRIVAL:   ${ret2To.value}|||${shortDate(smartArrivalDate(ret2Date.value, ret2DepTime.value, ret2ArrTime.value))} ${ret2ArrTime.value}
-           FLIGHT BOOKING REF: TK/${bookingRef}
+           FLIGHT BOOKING REF: ${airlineCode}/${bookingRef}
            RESERVATION CONFIRMED, ECONOMY (L)|||DURATION: ${calculateFlightDuration(ret2DepTime.value, ret2ArrTime.value, ret2From.value.split(',')[0].trim(), ret2To.value.split(',')[0].trim())}
 ${dashSep}
            MEAL:                     MEAL
@@ -784,7 +796,7 @@ https://www.icao.int/environmental-protection/CarbonOffset/Pages/default.aspx
 
 FLIGHT TICKET(S)
 ${fullSep}
-${travelers.map(t => `TICKET: TK/ETKT 235 ${ticketDigits}   FOR ${t}`).join('\n')}
+${travelers.map(t => `TICKET: ${airlineCode}/ETKT 235 ${ticketDigits}   FOR ${t}`).join('\n')}
 
 Data Protection Notice: Your personal data will be processed in accordance with 
 the applicable carrier’s privacy policy and, if your booking is made via a 
