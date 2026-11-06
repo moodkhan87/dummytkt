@@ -772,11 +772,11 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
 		    airlineCode = matchedAirline.code;
 		}
 	    // Agency Details with Default Fallbacks (Forced Uppercase)
-        const agencyName = (document.getElementById('agencyName').value || 'AL MUSAFIR AL AWWAL TOURISM').toUpperCase();
-        const agencyStreet = (document.getElementById('agencyStreet').value || 'MADINAH ROAD').toUpperCase();
-        const agencyDistrict = (document.getElementById('agencyDistrict').value || 'AR RUWAIS DIST').toUpperCase();
-        const agencyCityZip = (document.getElementById('agencyCityZip').value || 'JEDDAH 23214').toUpperCase();
-        const agencyCountry = (document.getElementById('agencyCountry').value || 'SAUDI ARABIA').toUpperCase();
+        const agencyName = (document.getElementById('agencyName').value || 'ENTER AGENCY NAME').toUpperCase();
+        const agencyStreet = (document.getElementById('agencyStreet').value || 'ENTER STREET ADDRESS').toUpperCase();
+        const agencyDistrict = (document.getElementById('agencyDistrict').value || 'ENTER DISTRICT').toUpperCase();
+        const agencyCityZip = (document.getElementById('agencyCityZip').value || 'ENTER CITY / ZIP').toUpperCase();
+        const agencyCountry = (document.getElementById('agencyCountry').value || 'ENTER COUNTRY').toUpperCase();
         const bookingRef = randomBookingRef();
         const ticketDigits = randomTicketDigits();
                 const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
@@ -894,6 +894,7 @@ your personal data is collected, stored, used, disclosed and transferred.
     }
 
     async function downloadPDF() {
+		saveAgencyDetails();
         const fullText = buildExactTicket();
         const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
         
@@ -994,6 +995,7 @@ your personal data is collected, stored, used, disclosed and transferred.
         doc.save(`Flight_${(out1Flight.value || 'TK')}_${randomBookingRef()}.pdf`);
     }
 	async function printPDF() {
+		saveAgencyDetails();
         const fullText = buildExactTicket();
         const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
         
@@ -1381,6 +1383,32 @@ document.addEventListener('keydown', function(event) {
         }
     }
 });
+	// ===== LOCALSTORAGE AGENCY DETAILS LOGIC =====
+function saveAgencyDetails() {
+    const agencyData = {
+        name: document.getElementById('agencyName').value,
+        street: document.getElementById('agencyStreet').value,
+        district: document.getElementById('agencyDistrict').value,
+        cityZip: document.getElementById('agencyCityZip').value,
+        country: document.getElementById('agencyCountry').value
+    };
+    localStorage.setItem('savedAgencyDetails', JSON.stringify(agencyData));
+}
+
+function loadAgencyDetails() {
+    const savedData = localStorage.getItem('savedAgencyDetails');
+    if (savedData) {
+        const agencyData = JSON.parse(savedData);
+        document.getElementById('agencyName').value = agencyData.name || '';
+        document.getElementById('agencyStreet').value = agencyData.street || '';
+        document.getElementById('agencyDistrict').value = agencyData.district || '';
+        document.getElementById('agencyCityZip').value = agencyData.cityZip || '';
+        document.getElementById('agencyCountry').value = agencyData.country || '';
+    }
+}
+
+// Load details automatically when the page opens
+loadAgencyDetails();
 	
 </script>
 	<!-- FOOTER -->
