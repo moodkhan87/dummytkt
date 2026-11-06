@@ -452,6 +452,85 @@ function setFlightType(type) {
     syncFields();
     updatePreview();
 }
+	// ===== DATE VALIDATION LOGIC =====
+function validateDates() {
+    let isValid = true;
+    const errorMsg = "⚠️ Date Error";
+
+    // Helper to reset styles
+    function resetStyle(id) {
+        const el = document.getElementById(id);
+        if(el) {
+            el.style.borderColor = "#cbd5e1"; 
+            el.style.backgroundColor = "white";
+            // Remove any existing error message span if present
+            const existingMsg = el.parentNode.querySelector('.date-error-msg');
+            if(existingMsg) existingMsg.remove();
+        }
+    }
+
+    // Helper to show error
+    function showError(id, msg) {
+        const el = document.getElementById(id);
+        if(el) {
+            el.style.borderColor = "#ef4444"; // Red border
+            el.style.backgroundColor = "#fef2f2"; // Light red background
+            
+            // Add error text below input if not already there
+            if(!el.parentNode.querySelector('.date-error-msg')) {
+                const errSpan = document.createElement('span');
+                errSpan.className = 'date-error-msg';
+                errSpan.style.color = "#ef4444";
+                errSpan.style.fontSize = "10px";
+                errSpan.style.marginTop = "2px";
+                errSpan.innerText = msg;
+                el.parentNode.appendChild(errSpan);
+            }
+        }
+        isValid = false;
+    }
+
+    // 1. Check Outbound Leg 1 vs Leg 2 (Transit Mode Only)
+    if (flightType === 'transit') {
+        if (out1Date.value && out2Date.value) {
+            if (new Date(out2Date.value) < new Date(out1Date.value)) {
+                showError('out2Date', "Cannot be before Leg 1");
+            } else {
+                resetStyle('out2Date');
+            }
+        }
+    }
+
+    // 2. Check Return Leg 1 vs Leg 2 (Transit Mode Only)
+    if (flightType === 'transit') {
+        if (ret1Date.value && ret2Date.value) {
+            if (new Date(ret2Date.value) < new Date(ret1Date.value)) {
+                showError('ret2Date', "Cannot be before Leg 1");
+            } else {
+                resetStyle('ret2Date');
+            }
+        }
+    }
+
+    // 3. Check Return Date vs Outbound Date (The most important one)
+    // We compare the earliest outbound date with the earliest return date
+    let earliestOutbound = out1Date.value;
+    let earliestReturn = ret1Date.value; // For direct, ret1 is hidden but ret2 is used
+    
+    if (flightType === 'direct') {
+        earliestReturn = ret2Date.value;
+    }
+
+    if (earliestOutbound && earliestReturn) {
+        if (new Date(earliestReturn) < new Date(earliestOutbound)) {
+            showError(flightType === 'direct' ? 'ret2Date' : 'ret1Date', "Return cannot be before Outbound");
+        } else {
+            resetStyle(flightType === 'direct' ? 'ret2Date' : 'ret1Date');
+        }
+    }
+
+    return isValid;
+}
 transitBtn.addEventListener('click', () => setFlightType('transit'));
 directBtn.addEventListener('click', () => setFlightType('direct'));
 
@@ -1028,7 +1107,13 @@ your personal data is collected, stored, used, disclosed and transferred.
     function onGenerate() {
         syncFields();
         updatePreview();
-        downloadPDF();
+        
+        // Only generate if dates are valid
+        if (validateDates()) {
+            downloadPDF();
+        } else {
+            alert("Please correct the date errors highlighted in red before generating.");
+        }
     }
 
     function clearAll() {
@@ -1093,7 +1178,13 @@ your personal data is collected, stored, used, disclosed and transferred.
                        out2Date, out2DepTime, out2ArrTime, out2To, out2Flight,
                        ret1Date, ret1DepTime, ret1ArrTime, ret1To, ret1Flight,
                        ret2Date, ret2DepTime, ret2ArrTime, ret2Flight];
-    allInputs.forEach(i => i.addEventListener('input', updatePreview));
+    
+    allInputs.forEach(i => {
+        i.addEventListener('input', () => {
+            updatePreview();
+            validateDates(); // Run validation every time a user types
+        });
+    });
 
     // Initialize
 	setFlightType('direct');
