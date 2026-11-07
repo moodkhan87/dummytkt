@@ -232,16 +232,23 @@
         </div>
     </div>
 	
-	<div style="margin-top: 20px; margin-bottom: 20px; padding: 15px; background: #f4f4f4; border-radius: 5px;">
-	    <h4 style="margin: 0 0 10px 0; font-size: 14px;">Agency Details (Leave blank for default)</h4>
-	    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-	        <input type="text" id="agencyName" placeholder="Agency Name" style="flex: 2; min-width: 200px; padding: 8px;">
-	        <input type="text" id="agencyStreet" placeholder="Street Name" style="flex: 2; min-width: 200px; padding: 8px;">
-	        <input type="text" id="agencyDistrict" placeholder="District" style="flex: 1; min-width: 120px; padding: 8px;">
-	        <input type="text" id="agencyCityZip" placeholder="City / Zipcode" style="flex: 1; min-width: 120px; padding: 8px;">
-	        <input type="text" id="agencyCountry" placeholder="Country" style="flex: 1; min-width: 120px; padding: 8px;">
-	    </div>
-	</div>
+<div style="margin-top: 20px; margin-bottom: 20px; padding: 15px; background: #f4f4f4; border-radius: 5px;">
+    <h4 style="margin: 0 0 10px 0; font-size: 14px;">Agency Details (Required fields marked with *)</h4>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="input-group" style="flex: 2; min-width: 200px;">
+            <input type="text" id="agencyName" placeholder="* Agency Name" style="padding: 8px; width: 100%;">
+        </div>
+        <div class="input-group" style="flex: 3; min-width: 250px;">
+            <input type="text" id="agencyAddress" placeholder="* Street & District" style="padding: 8px; width: 100%;">
+        </div>
+        <div class="input-group" style="flex: 1; min-width: 120px;">
+            <input type="text" id="agencyCityZip" placeholder="* City / Zip" style="padding: 8px; width: 100%;">
+        </div>
+        <div class="input-group" style="flex: 1; min-width: 120px;">
+            <input type="text" id="agencyCountry" placeholder="Country (Optional)" style="padding: 8px; width: 100%;">
+        </div>
+    </div>
+</div>
 	<!-- PREVIEW TOGGLE -->
 	<div style="margin-top: 10px; margin-bottom: 10px;">
 	    <label style="display: flex; align-items: center; cursor: pointer; font-size: 13px; color: #555;">
@@ -468,6 +475,44 @@ function validateDates() {
             if(existingMsg) existingMsg.remove();
         }
     }
+
+	// ===== AGENCY DETAILS VALIDATION =====
+function validateAgency() {
+    let isValid = true;
+    const requiredFields = [
+        { id: 'agencyName', msg: '* Required' },
+        { id: 'agencyAddress', msg: '* Required' },
+        { id: 'agencyCityZip', msg: '* Required' }
+    ];
+
+    requiredFields.forEach(field => {
+        const el = document.getElementById(field.id);
+        if (!el.value.trim()) {
+            el.style.borderColor = "#ef4444";
+            el.style.backgroundColor = "#fef2f2";
+            
+            // Add error message if not already present
+            if (!el.parentNode.querySelector('.agency-error-msg')) {
+                const errSpan = document.createElement('span');
+                errSpan.className = 'agency-error-msg';
+                errSpan.style.color = "#ef4444";
+                errSpan.style.fontSize = "10px";
+                errSpan.style.marginTop = "2px";
+                errSpan.innerText = field.msg;
+                el.parentNode.appendChild(errSpan);
+            }
+            isValid = false;
+        } else {
+            // Reset style if valid
+            el.style.borderColor = "#cbd5e1";
+            el.style.backgroundColor = "white";
+            const existingMsg = el.parentNode.querySelector('.agency-error-msg');
+            if (existingMsg) existingMsg.remove();
+        }
+    });
+
+    return isValid;
+}
 
     // Helper to show error
     function showError(id, msg) {
@@ -772,11 +817,10 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
 		    airlineCode = matchedAirline.code;
 		}
 	    // Agency Details with Default Fallbacks (Forced Uppercase)
-        const agencyName = (document.getElementById('agencyName').value || 'ENTER AGENCY NAME').toUpperCase();
-        const agencyStreet = (document.getElementById('agencyStreet').value || 'ENTER STREET ADDRESS').toUpperCase();
-        const agencyDistrict = (document.getElementById('agencyDistrict').value || 'ENTER DISTRICT').toUpperCase();
-        const agencyCityZip = (document.getElementById('agencyCityZip').value || 'ENTER CITY / ZIP').toUpperCase();
-        const agencyCountry = (document.getElementById('agencyCountry').value || 'ENTER COUNTRY').toUpperCase();
+        const agencyName = document.getElementById('agencyName').value.trim().toUpperCase();
+        const agencyAddress = document.getElementById('agencyAddress').value.trim().toUpperCase();
+        const agencyCityZip = document.getElementById('agencyCityZip').value.trim().toUpperCase();
+        const agencyCountry = document.getElementById('agencyCountry').value.trim().toUpperCase();
         const bookingRef = randomBookingRef();
         const ticketDigits = randomTicketDigits();
                 const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
@@ -790,10 +834,13 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
         const dashSep = "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 
         let ticket = `${agencyName}|||BOOKING REF: ${bookingRef}
-${agencyStreet}|||DATE: ${currentDate}
-${agencyDistrict}
-${agencyCityZip}|||${travelers[0]}
-${agencyCountry}|||\n`;
+${agencyAddress}|||DATE: ${currentDate}
+${agencyCityZip}|||${travelers[0]}\n`;
+
+        // Only add country line if user entered it
+        if (agencyCountry) {
+            ticket += `${agencyCountry}|||\n`;
+        }
 
         // Stack remaining passengers (No more padStart needed!)
         for (let i = 1; i < travelers.length; i++) {
@@ -1110,11 +1157,16 @@ your personal data is collected, stored, used, disclosed and transferred.
         syncFields();
         updatePreview();
         
-        // Only generate if dates are valid
-        if (validateDates()) {
+        // Validate both dates AND agency details
+        const datesValid = validateDates();
+        const agencyValid = validateAgency();
+        
+        if (datesValid && agencyValid) {
             downloadPDF();
+        } else if (!agencyValid) {
+            alert("⚠️ Please fill in all required agency details (marked with *)");
         } else {
-            alert("Please correct the date errors highlighted in red before generating.");
+            alert("⚠️ Please correct the date errors highlighted in red");
         }
     }
 
@@ -1136,11 +1188,10 @@ your personal data is collected, stored, used, disclosed and transferred.
 	    
 	    // Clear agency details too
 	    document.getElementById('agencyName').value = "";
-	    document.getElementById('agencyStreet').value = "";
-	    document.getElementById('agencyDistrict').value = "";
+	    document.getElementById('agencyAddress').value = "";
 	    document.getElementById('agencyCityZip').value = "";
 	    document.getElementById('agencyCountry').value = "";
-	
+		
 	    syncFields();
 	    
 	    // Remove extra travelers
@@ -1387,8 +1438,7 @@ document.addEventListener('keydown', function(event) {
 function saveAgencyDetails() {
     const agencyData = {
         name: document.getElementById('agencyName').value,
-        street: document.getElementById('agencyStreet').value,
-        district: document.getElementById('agencyDistrict').value,
+        address: document.getElementById('agencyAddress').value,
         cityZip: document.getElementById('agencyCityZip').value,
         country: document.getElementById('agencyCountry').value
     };
@@ -1400,8 +1450,7 @@ function loadAgencyDetails() {
     if (savedData) {
         const agencyData = JSON.parse(savedData);
         document.getElementById('agencyName').value = agencyData.name || '';
-        document.getElementById('agencyStreet').value = agencyData.street || '';
-        document.getElementById('agencyDistrict').value = agencyData.district || '';
+        document.getElementById('agencyAddress').value = agencyData.address || '';
         document.getElementById('agencyCityZip').value = agencyData.cityZip || '';
         document.getElementById('agencyCountry').value = agencyData.country || '';
     }
