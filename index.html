@@ -463,7 +463,6 @@ function setFlightType(type) {
 function validateDates() {
     let isValid = true;
 
-    // Helper to reset styles
     function resetStyle(id) {
         const el = document.getElementById(id);
         if(el) {
@@ -474,13 +473,11 @@ function validateDates() {
         }
     }
 
-    // Helper to show error
     function showError(id, msg) {
         const el = document.getElementById(id);
         if(el) {
             el.style.borderColor = "#ef4444";
             el.style.backgroundColor = "#fef2f2";
-            
             if(!el.parentNode.querySelector('.date-error-msg')) {
                 const errSpan = document.createElement('span');
                 errSpan.className = 'date-error-msg';
@@ -494,35 +491,21 @@ function validateDates() {
         isValid = false;
     }
 
-    // 1. Check Outbound Leg 1 vs Leg 2 (Transit Mode Only)
     if (flightType === 'transit') {
         if (out1Date.value && out2Date.value) {
             if (new Date(out2Date.value) < new Date(out1Date.value)) {
                 showError('out2Date', "Cannot be before Leg 1");
-            } else {
-                resetStyle('out2Date');
-            }
+            } else { resetStyle('out2Date'); }
         }
-    }
-
-    // 2. Check Return Leg 1 vs Leg 2 (Transit Mode Only)
-    if (flightType === 'transit') {
         if (ret1Date.value && ret2Date.value) {
             if (new Date(ret2Date.value) < new Date(ret1Date.value)) {
                 showError('ret2Date', "Cannot be before Leg 1");
-            } else {
-                resetStyle('ret2Date');
-            }
+            } else { resetStyle('ret2Date'); }
         }
     }
 
-    // 3. Check Return Date vs Outbound Date
     let earliestOutbound = out1Date.value;
-    let earliestReturn = ret1Date.value;
-    
-    if (flightType === 'direct') {
-        earliestReturn = ret2Date.value;
-    }
+    let earliestReturn = flightType === 'direct' ? ret2Date.value : ret1Date.value;
 
     if (earliestOutbound && earliestReturn) {
         if (new Date(earliestReturn) < new Date(earliestOutbound)) {
@@ -549,7 +532,6 @@ function validateAgency() {
         if (!el.value.trim()) {
             el.style.borderColor = "#ef4444";
             el.style.backgroundColor = "#fef2f2";
-            
             if (!el.parentNode.querySelector('.agency-error-msg')) {
                 const errSpan = document.createElement('span');
                 errSpan.className = 'agency-error-msg';
@@ -568,69 +550,6 @@ function validateAgency() {
             if (existingMsg) existingMsg.remove();
         }
     });
-
-    return isValid;
-}
-
-    // Helper to show error
-    function showError(id, msg) {
-        const el = document.getElementById(id);
-        if(el) {
-            el.style.borderColor = "#ef4444"; // Red border
-            el.style.backgroundColor = "#fef2f2"; // Light red background
-            
-            // Add error text below input if not already there
-            if(!el.parentNode.querySelector('.date-error-msg')) {
-                const errSpan = document.createElement('span');
-                errSpan.className = 'date-error-msg';
-                errSpan.style.color = "#ef4444";
-                errSpan.style.fontSize = "10px";
-                errSpan.style.marginTop = "2px";
-                errSpan.innerText = msg;
-                el.parentNode.appendChild(errSpan);
-            }
-        }
-        isValid = false;
-    }
-
-    // 1. Check Outbound Leg 1 vs Leg 2 (Transit Mode Only)
-    if (flightType === 'transit') {
-        if (out1Date.value && out2Date.value) {
-            if (new Date(out2Date.value) < new Date(out1Date.value)) {
-                showError('out2Date', "Cannot be before Leg 1");
-            } else {
-                resetStyle('out2Date');
-            }
-        }
-    }
-
-    // 2. Check Return Leg 1 vs Leg 2 (Transit Mode Only)
-    if (flightType === 'transit') {
-        if (ret1Date.value && ret2Date.value) {
-            if (new Date(ret2Date.value) < new Date(ret1Date.value)) {
-                showError('ret2Date', "Cannot be before Leg 1");
-            } else {
-                resetStyle('ret2Date');
-            }
-        }
-    }
-
-    // 3. Check Return Date vs Outbound Date (The most important one)
-    // We compare the earliest outbound date with the earliest return date
-    let earliestOutbound = out1Date.value;
-    let earliestReturn = ret1Date.value; // For direct, ret1 is hidden but ret2 is used
-    
-    if (flightType === 'direct') {
-        earliestReturn = ret2Date.value;
-    }
-
-    if (earliestOutbound && earliestReturn) {
-        if (new Date(earliestReturn) < new Date(earliestOutbound)) {
-            showError(flightType === 'direct' ? 'ret2Date' : 'ret1Date', "Return cannot be before Outbound");
-        } else {
-            resetStyle(flightType === 'direct' ? 'ret2Date' : 'ret1Date');
-        }
-    }
 
     return isValid;
 }
