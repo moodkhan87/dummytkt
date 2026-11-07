@@ -459,10 +459,9 @@ function setFlightType(type) {
     syncFields();
     updatePreview();
 }
-	// ===== DATE VALIDATION LOGIC =====
+// ===== DATE VALIDATION LOGIC =====
 function validateDates() {
     let isValid = true;
-    const errorMsg = "⚠️ Date Error";
 
     // Helper to reset styles
     function resetStyle(id) {
@@ -470,13 +469,73 @@ function validateDates() {
         if(el) {
             el.style.borderColor = "#cbd5e1"; 
             el.style.backgroundColor = "white";
-            // Remove any existing error message span if present
             const existingMsg = el.parentNode.querySelector('.date-error-msg');
             if(existingMsg) existingMsg.remove();
         }
     }
 
-	// ===== AGENCY DETAILS VALIDATION =====
+    // Helper to show error
+    function showError(id, msg) {
+        const el = document.getElementById(id);
+        if(el) {
+            el.style.borderColor = "#ef4444";
+            el.style.backgroundColor = "#fef2f2";
+            
+            if(!el.parentNode.querySelector('.date-error-msg')) {
+                const errSpan = document.createElement('span');
+                errSpan.className = 'date-error-msg';
+                errSpan.style.color = "#ef4444";
+                errSpan.style.fontSize = "10px";
+                errSpan.style.marginTop = "2px";
+                errSpan.innerText = msg;
+                el.parentNode.appendChild(errSpan);
+            }
+        }
+        isValid = false;
+    }
+
+    // 1. Check Outbound Leg 1 vs Leg 2 (Transit Mode Only)
+    if (flightType === 'transit') {
+        if (out1Date.value && out2Date.value) {
+            if (new Date(out2Date.value) < new Date(out1Date.value)) {
+                showError('out2Date', "Cannot be before Leg 1");
+            } else {
+                resetStyle('out2Date');
+            }
+        }
+    }
+
+    // 2. Check Return Leg 1 vs Leg 2 (Transit Mode Only)
+    if (flightType === 'transit') {
+        if (ret1Date.value && ret2Date.value) {
+            if (new Date(ret2Date.value) < new Date(ret1Date.value)) {
+                showError('ret2Date', "Cannot be before Leg 1");
+            } else {
+                resetStyle('ret2Date');
+            }
+        }
+    }
+
+    // 3. Check Return Date vs Outbound Date
+    let earliestOutbound = out1Date.value;
+    let earliestReturn = ret1Date.value;
+    
+    if (flightType === 'direct') {
+        earliestReturn = ret2Date.value;
+    }
+
+    if (earliestOutbound && earliestReturn) {
+        if (new Date(earliestReturn) < new Date(earliestOutbound)) {
+            showError(flightType === 'direct' ? 'ret2Date' : 'ret1Date', "Return cannot be before Outbound");
+        } else {
+            resetStyle(flightType === 'direct' ? 'ret2Date' : 'ret1Date');
+        }
+    }
+
+    return isValid;
+}
+
+// ===== AGENCY DETAILS VALIDATION =====
 function validateAgency() {
     let isValid = true;
     const requiredFields = [
@@ -491,19 +550,18 @@ function validateAgency() {
             el.style.borderColor = "#ef4444";
             el.style.backgroundColor = "#fef2f2";
             
-            // Add error message if not already present
             if (!el.parentNode.querySelector('.agency-error-msg')) {
                 const errSpan = document.createElement('span');
                 errSpan.className = 'agency-error-msg';
                 errSpan.style.color = "#ef4444";
                 errSpan.style.fontSize = "10px";
                 errSpan.style.marginTop = "2px";
+                errSpan.style.display = "block";
                 errSpan.innerText = field.msg;
                 el.parentNode.appendChild(errSpan);
             }
             isValid = false;
         } else {
-            // Reset style if valid
             el.style.borderColor = "#cbd5e1";
             el.style.backgroundColor = "white";
             const existingMsg = el.parentNode.querySelector('.agency-error-msg');
@@ -1156,10 +1214,12 @@ your personal data is collected, stored, used, disclosed and transferred.
     function onGenerate() {
         syncFields();
         updatePreview();
+        saveAgencyDetails(); // Save first!
         
-        // Validate both dates AND agency details
         const datesValid = validateDates();
         const agencyValid = validateAgency();
+        
+        console.log("Dates Valid:", datesValid, "| Agency Valid:", agencyValid);
         
         if (datesValid && agencyValid) {
             downloadPDF();
