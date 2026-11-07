@@ -757,51 +757,31 @@ directBtn.addEventListener('click', () => setFlightType('direct'));
 	}
 
 	// MAIN TICKET BUILDER - MATCHING ORIGINAL DESIGN
-function buildExactTicket() {
+    function buildExactTicket() {
         const carrier = (airlineCarrier.value || "TURKISH AIRLINES").trim().toUpperCase();
-        
-        // Extract airline code dynamically
-        let airlineCode = "TK"; 
-        const userCarrier = carrier.toUpperCase();
-        const matchedAirline = AIRLINES.find(airline => userCarrier.includes(airline.name.toUpperCase()));
-        if (matchedAirline) airlineCode = matchedAirline.code;
-
-        // 🎯 NEW: Get Agency Details (No fallbacks!)
-        const agencyName = document.getElementById('agencyName').value.trim().toUpperCase();
-        const street = document.getElementById('agencyStreet').value.trim().toUpperCase();
-        const district = document.getElementById('agencyDistrict').value.trim().toUpperCase();
-        const cityZip = document.getElementById('agencyCityZip').value.trim().toUpperCase();
-        const country = document.getElementById('agencyCountry').value.trim().toUpperCase();
-
-        // Merge Street & District intelligently
-        let addressLine = "";
-        if (street && district) addressLine = `${street}, ${district}`;
-        else if (street) addressLine = street;
-        else if (district) addressLine = district;
-
+		// Extract the official 2-letter airline code by matching the carrier name
+		let airlineCode = "TK"; // Default fallback
+		const userCarrier = carrier.toUpperCase();
+		
+		// Search the AIRLINES array for a match
+		const matchedAirline = AIRLINES.find(airline => 
+		    userCarrier.includes(airline.name.toUpperCase())
+		);
+		
+		if (matchedAirline) {
+		    airlineCode = matchedAirline.code;
+		}
+	    // Agency Details with Default Fallbacks (Forced Uppercase)
+        const agencyName = (document.getElementById('agencyName').value || 'ENTER AGENCY NAME').toUpperCase();
+        const agencyStreet = (document.getElementById('agencyStreet').value || 'ENTER STREET ADDRESS').toUpperCase();
+        const agencyDistrict = (document.getElementById('agencyDistrict').value || 'ENTER DISTRICT').toUpperCase();
+        const agencyCityZip = (document.getElementById('agencyCityZip').value || 'ENTER CITY / ZIP').toUpperCase();
+        const agencyCountry = (document.getElementById('agencyCountry').value || 'ENTER COUNTRY').toUpperCase();
         const bookingRef = randomBookingRef();
         const ticketDigits = randomTicketDigits();
-        const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
-        const travelers = getTravelers();
-
-        // Build Ticket Header
-        let ticket = `${agencyName}|||BOOKING REF: ${bookingRef}
-${addressLine}|||DATE: ${currentDate}
-${cityZip}|||${travelers[0]}
-`;
-
-        // Only add country line if user entered it
-        if (country) {
-            ticket += `${country}|||\n`;
-        } else {
-            ticket += `\n`; 
-        }
-
-        // Stack remaining passengers
-        for (let i = 1; i < travelers.length; i++) {
-            ticket += `|||${travelers[i]}\n`;
-        }
-        ticket += `\n`; 
+                const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+		const travelers = getTravelers();
+		const traveler = getTravelers()[0];
         
         	// 🎯 NEW: Right-align the traveler name to column 70
         	const travelerPadded = traveler.padStart(58, ' ');
@@ -1126,30 +1106,16 @@ your personal data is collected, stored, used, disclosed and transferred.
 	   }
     }
 
-function onGenerate() {
+    function onGenerate() {
         syncFields();
         updatePreview();
         
-        // 1. Check Dates first
-        if (!validateDates()) {
+        // Only generate if dates are valid
+        if (validateDates()) {
+            downloadPDF();
+        } else {
             alert("Please correct the date errors highlighted in red before generating.");
-            return;
         }
-
-        // 2. Check Required Agency Details
-        const agencyName = document.getElementById('agencyName').value.trim();
-        const street = document.getElementById('agencyStreet').value.trim();
-        const district = document.getElementById('agencyDistrict').value.trim();
-        const cityZip = document.getElementById('agencyCityZip').value.trim();
-
-        // Must have Name AND (Street OR District) AND City/Zip
-        if (!agencyName || (!street && !district) || !cityZip) {
-            alert("⚠️ Please fill in all required Agency Details:\n• Agency Name\n• Street or District\n• City / Zip Code");
-            return; 
-        }
-
-        // 3. If all good, generate!
-        downloadPDF();
     }
 
     function clearAll() {
